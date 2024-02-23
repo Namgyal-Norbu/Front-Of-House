@@ -1,6 +1,7 @@
 package Management;
 
 public interface FOHtoManagement {
-    BookingToManagement getBookings(BookingToManagement booking);
+    BookingsToManagement getBookings(BookingsToManagement booking);
+    SalesToManagement getSales(SalesToManagement sales);
 }
 

@@ -3,7 +3,7 @@ package Kitchen;
 import java.util.List;
 import java.util.Map;
 
-public abstract class OrderToKitchen {
+public abstract class OrdersToKitchen {
     int orderID;
     int tableNo;
     Map<Integer, Integer> dishes;
