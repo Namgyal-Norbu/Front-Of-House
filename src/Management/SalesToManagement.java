@@ -1,48 +1,48 @@
 package Management;
 
 public abstract class SalesToManagement {
-    private String saleId;
-    private double totalAmount;
+    private int saleID; 
+    private int total; 
     private String paymentMethod;
-    private LocalDateTime saleTime;
+    private ArrayList<String> dishList; // Added to align with the specifications received.
 
-    public SalesToManagement(String saleId, double totalAmount, String paymentMethod, LocalDateTime saleTime) {
-        this.saleId = saleId;
-        this.totalAmount = totalAmount;
+     public SalesToManagement(int saleID, int total, String method, ArrayList<String> dishList) {
+        this.saleID = saleID;
+        this.total = total;
         this.paymentMethod = paymentMethod;
-        this.saleTime = saleTime;
+        this.dishList = dishList;
     }
 
-    public String getSaleId() {
-        return saleId;
+ public int getSaleID() {
+        return saleID;
     }
 
-    public void setSaleId(String saleId) {
-        this.saleId = saleId;
+    public void setSaleID(int saleID) {
+        this.saleID = saleID;
     }
 
-    public double getTotalAmount() {
-        return totalAmount;
+    public int getTotal() {
+        return total;
     }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     public String getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setPaymentMethod(String method) {
+        this.method = paymentMethod;
     }
 
-    public LocalDateTime getSaleTime() {
-        return saleTime;
+    public ArrayList<String> getDishList() {
+        return dishList;
     }
 
-    public void setSaleTime(LocalDateTime saleTime) {
-        this.saleTime = saleTime;
+    public void setDishList(ArrayList<String> dishList) {
+        this.dishList = dishList;
     }
 }
 
