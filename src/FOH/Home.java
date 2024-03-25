@@ -1,15 +1,9 @@
 package FOH;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
 import java.io.IOException;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class Home {
   private static JFrame frame;
@@ -39,21 +33,37 @@ public class Home {
   public void loadLogo() {
     ImageIcon icon = new ImageIcon("res/images/logo.png");
     JLabel logo = new JLabel(icon);
-    logo.setBounds(175, -130, icon.getIconWidth(), icon.getIconHeight());
+    logo.setBounds(175, -150, icon.getIconWidth(), icon.getIconHeight());
     panel.add(logo);
   }
 
   public void loadButtons() {
     JButton create = new JButton("Create Reservation");
-    JButton view = new JButton("View Reservations");
-    JButton serve = new JButton("Serve Table");
-
     create.setBounds(75, 335, 200, 150);
+    create.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("create");
+      }
+    });
+
+    JButton view = new JButton("View Reservations");
     view.setBounds(375, 335, 200, 150);
+    view.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("view");
+      }
+    });
+
+    JButton serve = new JButton("Serve Table");
     serve.setBounds(675, 335, 200, 150);
+    serve.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("serve");
+      }
+    });
 
     panel.add(create);
     panel.add(view);
     panel.add(serve);
-  }
+  }  
 }
