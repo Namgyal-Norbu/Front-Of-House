@@ -27,6 +27,7 @@ public class Home {
     frame.setTitle("FOH Service Software");
     frame.setSize(950, 650);
     frame.setLocationRelativeTo(null);
+    frame.setResizable(false);
     frame.setVisible(true);
   }
 
