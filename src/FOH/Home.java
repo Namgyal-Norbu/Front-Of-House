@@ -39,7 +39,7 @@ public class Home {
   public void loadLogo() {
     ImageIcon icon = new ImageIcon("res/images/logo.png");
     JLabel logo = new JLabel(icon);
-    logo.setBounds(175, -150, icon.getIconWidth(), icon.getIconHeight());
+    logo.setBounds(175, -130, icon.getIconWidth(), icon.getIconHeight());
     panel.add(logo);
   }
 
@@ -48,9 +48,9 @@ public class Home {
     JButton view = new JButton("View Reservations");
     JButton serve = new JButton("Serve Table");
 
-    create.setBounds(75, 300, 200, 150);
-    view.setBounds(375, 300, 200, 150);
-    serve.setBounds(675, 300, 200, 150);
+    create.setBounds(75, 335, 200, 150);
+    view.setBounds(375, 335, 200, 150);
+    serve.setBounds(675, 335, 200, 150);
 
     panel.add(create);
     panel.add(view);
