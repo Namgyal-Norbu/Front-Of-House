@@ -1,12 +1,13 @@
 import java.io.IOException;
 
-import FOH.GUI;
+import FOH.Home;
 
 public class Main {
   public static void main(String[] args) {
     System.out.println("booting up system...");
     try {
-      GUI.app();
+      Home app = new Home();
+      app.start();
     
     } catch (IOException e) {
       e.printStackTrace();
