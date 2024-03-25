@@ -21,8 +21,8 @@ public abstract class OrdersToKitchen {
      * @param allergies
      * @param removedIngr
      */
-    public OrderToKitchen(int orderID, int tableNo, Map<Integer, Integer> dishes, 
-            List<String> allergies, Map<Integer, List<String>> removedIngr) {
+    public OrdersToKitchen(int orderID, int tableNo, Map<Integer, Integer> dishes,
+        List<String> allergies, Map<Integer, List<String>> removedIngr) {
         this.orderID = orderID;
         this.tableNo = tableNo;
         this.dishes = dishes;
@@ -58,7 +58,7 @@ public abstract class OrdersToKitchen {
      * Getter method that returns isOrderComplete
      * @return isOrderComplete
      */
-    public List<String> getIsOrderComplete() {return isOrderComplete;};
+    public boolean getIsOrderComplete() {return isOrderComplete;};
 
     /**
      * Getter method that returns removedIngr

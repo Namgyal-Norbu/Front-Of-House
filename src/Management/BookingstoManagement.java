@@ -52,6 +52,6 @@ public abstract class BookingstoManagement {
      * Getter method that returns noOfCovers
      * @return noOfCovers
      */  
-    public String getNoOfCovers() { return noOfCovers; }
+    public int getNoOfCovers() { return noOfCovers; }
 
 }

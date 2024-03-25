@@ -1,6 +1,6 @@
 package Management;
 
-// apiNote: Specification document detailed integer for 'total' but double is used since this is money
+import java.util.ArrayList;;
 
 // abstract class representing sales information sent to management
 public abstract class SalesToManagement {
@@ -21,9 +21,10 @@ public abstract class SalesToManagement {
      * @param total
      * @param paymentMethod
      * @param dishList
+     * @apiNote: Specification document detailed integer for 'total' but double is used since this is money
      */
      public SalesToManagement(int saleID, boolean nhsDisc, boolean armyDisc, boolean optionalCharge, 
-             int total, String paymentMethod, ArrayList<String> dishList) {
+             int total, String paymentMethod, ArrayList<Integer> dishList) {
         this.saleID = saleID;
         this.nhsDisc = nhsDisc;
         this.armyDisc = armyDisc;
