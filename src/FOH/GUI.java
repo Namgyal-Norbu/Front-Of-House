@@ -1,6 +1,7 @@
 package FOH;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
@@ -19,6 +20,7 @@ public class GUI {
     JButton button = new JButton("click me");
     button.setBounds(375, 275, 200, 100);
 
+    panel.setBackground(new Color(39, 52, 54));
     panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
     panel.setLayout(null);
     panel.add(button);
