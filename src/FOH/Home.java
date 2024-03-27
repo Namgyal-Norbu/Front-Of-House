@@ -29,6 +29,7 @@ public class Home {
     frame.setLocationRelativeTo(null);
     frame.setResizable(false);
     frame.setVisible(true);
+
   }
 
   public void loadLogo() {
@@ -44,14 +45,33 @@ public class Home {
     create.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         System.out.println("create");
+        if(e.getSource()==create){
+          frame.dispose();
+          CreateReservation createReservation = new CreateReservation();
+          try{
+            createReservation.start();
+          } catch(IOException ex){
+            throw new RuntimeException(ex);
+          }
+        }
       }
     });
 
     JButton view = new JButton("View Reservations");
     view.setBounds(375, 335, 200, 150);
     view.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(ActionEvent e)
+      {
         System.out.println("view");
+        if (e.getSource() == view){
+          frame.dispose();
+          ViewReservation viewReservation = new ViewReservation();
+          try{
+            viewReservation.start();
+          } catch(IOException ex){
+            throw new RuntimeException(ex);
+          }
+        }
       }
     });
 
@@ -60,11 +80,22 @@ public class Home {
     serve.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         System.out.println("serve");
+        if (e.getSource() == serve){
+          frame.dispose();
+          ServeTable serveTable = new ServeTable();
+            try {
+                serveTable.start();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
       }
     });
 
     panel.add(create);
     panel.add(view);
     panel.add(serve);
-  }  
+
+  }
+
 }
