@@ -6,15 +6,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
+
 public class CreateReservation {
     private JFrame frame;
     private JPanel panel;
     private JLabel title;
     
-    private JComboBox prefix;
+    private JComboBox<String> prefix;
     private JTextField forename;
     private JTextField surname;
     private JTextField telephone;
+    private JDatePickerImpl date;
+    private JComboBox<Integer> hourComboBox;
+    private JComboBox<Integer> minuteComboBox;
+    private JTextField occupants;
+    private JTextField tableNo;
 
     public CreateReservation() {
         frame = new JFrame();
@@ -27,6 +36,25 @@ public class CreateReservation {
         forename = new JTextField(20);
         surname = new JTextField(20);
         telephone = new JTextField(20);
+        occupants = new JTextField(2);
+
+        UtilDateModel model = new UtilDateModel();
+        date = new JDatePickerImpl(new JDatePanelImpl(model));
+
+        hourComboBox = new JComboBox<>(createIntegerArray(17, 23));
+        minuteComboBox = new JComboBox<>(createIntegerArray(0, 59));
+
+        tableNo = new JTextField(2);
+    }
+
+
+    private Integer[] createIntegerArray(int start, int end) {
+        int length = end - start + 1;
+        Integer[] array = new Integer[length];
+        for (int i = 0; i < length; i++) {
+            array[i] = start + i;
+        }
+        return array;
     }
 
     public void start() throws IOException {
@@ -55,52 +83,71 @@ public class CreateReservation {
         panel.add(title, BorderLayout.NORTH);
     }
 
+    public void addField(JPanel panel, FlowLayout layout ,String label, JTextField field) {
+        JPanel fieldPanel = new JPanel(layout);
+        fieldPanel.setBackground(new Color(43, 51, 54));
+        
+        JLabel text = new JLabel(label);
+        text.setForeground(Color.WHITE);
+
+        fieldPanel.add(text);
+        fieldPanel.add(field);
+        panel.add(fieldPanel);
+    }
+
+    public void addDropDown(JPanel panel, FlowLayout layout ,String label, JComboBox<String> dropBox) {
+        JPanel fieldPanel = new JPanel(layout);
+        fieldPanel.setBackground(new Color(43, 51, 54));
+        
+        JLabel text = new JLabel(label);
+        text.setForeground(Color.WHITE);
+
+        fieldPanel.add(text);
+        fieldPanel.add(dropBox);
+        panel.add(fieldPanel);
+    }
+
     public void setForm() {
         JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
         formPanel.setBackground(new Color(43, 51, 54));
 
-        // forename text field
-        JPanel prefixPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 11, 5));
-        prefixPanel.setBackground(new Color(43, 51, 54));
-        JLabel prefixLabel = new JLabel("Prefix:");
-        prefixLabel.setForeground(Color.WHITE);
-        
-        prefixPanel.add(prefixLabel);
-        prefixPanel.add(prefix);
-        formPanel.add(prefixPanel);
-        
-        // forename text field
-        JPanel forenamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 11, 5));
-        forenamePanel.setBackground(new Color(43, 51, 54));
-        JLabel forenameLabel = new JLabel("Forename:");
-        forenameLabel.setForeground(Color.WHITE);
-        forename.setPreferredSize(new Dimension(forename.getPreferredSize().width, 25));
+        // prefix drop-down list
+        addDropDown(formPanel, new FlowLayout(FlowLayout.LEFT, 11, 5), "Prefix:", prefix);
 
-        forenamePanel.add(forenameLabel);
-        forenamePanel.add(forename);
-        formPanel.add(forenamePanel);
+        // forename text field
+        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 11, 5), "Forename:", forename);
 
         // surname text field
-        JPanel surnamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 18, 5));
-        surnamePanel.setBackground(new Color(43, 51, 54));
-        JLabel surnameLabel = new JLabel("Surname:");
-        surnameLabel.setForeground(Color.WHITE);
-        surname.setPreferredSize(new Dimension(surname.getPreferredSize().width, 25));
-
-        surnamePanel.add(surnameLabel);
-        surnamePanel.add(surname);
-        formPanel.add(surnamePanel);
+        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 18, 5), "Surname:", surname);
         
         // telephone text field
-        JPanel telephonePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
-        telephonePanel.setBackground(new Color(43, 51, 54));
-        JLabel telephoneLabel = new JLabel("Telephone:");
-        telephoneLabel.setForeground(Color.WHITE);
-        telephone.setPreferredSize(new Dimension(telephone.getPreferredSize().width, 25));
+        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 8, 5), "Telephone:", telephone);
 
-        telephonePanel.add(telephoneLabel);
-        telephonePanel.add(telephone);
-        formPanel.add(telephonePanel);
+        // calander date selector
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 0));
+        datePanel.setBackground(new Color(43, 51, 54));
+        JLabel dateLabel = new JLabel("Date:");
+        dateLabel.setForeground(Color.WHITE);
+
+        datePanel.add(dateLabel);
+        datePanel.add(date);
+        formPanel.add(datePanel);
+
+        // time of day selector
+        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 20));
+        timePanel.setBackground(new Color(43, 51, 54));
+        JLabel timeLabel = new JLabel("Time:");
+        timeLabel.setForeground(Color.WHITE);
+        timePanel.add(timeLabel);
+        timePanel.add(hourComboBox);
+        timePanel.add(minuteComboBox);
+        formPanel.add(timePanel);
+
+        // occupants text field
+        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 20, 20), "Occupants:", occupants);
+
+        // Table No field
+        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 10, 5), "Table No:", tableNo);
 
         panel.add(formPanel, BorderLayout.CENTER);
     }
@@ -139,7 +186,7 @@ public class CreateReservation {
             }
         });
 
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 50, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
 
         buttonPanel.add(cancel);
         buttonPanel.add(submit);
