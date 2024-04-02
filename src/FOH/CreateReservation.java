@@ -10,7 +10,8 @@ public class CreateReservation {
     private JFrame frame;
     private JPanel panel;
     private JLabel title;
-
+    
+    private JComboBox prefix;
     private JTextField forename;
     private JTextField surname;
     private JTextField telephone;
@@ -19,6 +20,9 @@ public class CreateReservation {
         frame = new JFrame();
         panel = new JPanel();
         title = new JLabel("Create Reservation");
+
+        String[] prefixList = {"Mr.", "Ms.", "Mrs.", "Dr."};
+        prefix = new JComboBox<>(prefixList);
 
         forename = new JTextField(20);
         surname = new JTextField(20);
@@ -56,11 +60,21 @@ public class CreateReservation {
         formPanel.setBackground(new Color(43, 51, 54));
 
         // forename text field
+        JPanel prefixPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 11, 5));
+        prefixPanel.setBackground(new Color(43, 51, 54));
+        JLabel prefixLabel = new JLabel("Prefix:");
+        prefixLabel.setForeground(Color.WHITE);
+        
+        prefixPanel.add(prefixLabel);
+        prefixPanel.add(prefix);
+        formPanel.add(prefixPanel);
+        
+        // forename text field
         JPanel forenamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 11, 5));
         forenamePanel.setBackground(new Color(43, 51, 54));
         JLabel forenameLabel = new JLabel("Forename:");
         forenameLabel.setForeground(Color.WHITE);
-        forename.setPreferredSize(new Dimension(forename.getPreferredSize().width, 35));
+        forename.setPreferredSize(new Dimension(forename.getPreferredSize().width, 25));
 
         forenamePanel.add(forenameLabel);
         forenamePanel.add(forename);
@@ -71,7 +85,7 @@ public class CreateReservation {
         surnamePanel.setBackground(new Color(43, 51, 54));
         JLabel surnameLabel = new JLabel("Surname:");
         surnameLabel.setForeground(Color.WHITE);
-        surname.setPreferredSize(new Dimension(surname.getPreferredSize().width, 35));
+        surname.setPreferredSize(new Dimension(surname.getPreferredSize().width, 25));
 
         surnamePanel.add(surnameLabel);
         surnamePanel.add(surname);
@@ -82,7 +96,7 @@ public class CreateReservation {
         telephonePanel.setBackground(new Color(43, 51, 54));
         JLabel telephoneLabel = new JLabel("Telephone:");
         telephoneLabel.setForeground(Color.WHITE);
-        telephone.setPreferredSize(new Dimension(telephone.getPreferredSize().width, 35));
+        telephone.setPreferredSize(new Dimension(telephone.getPreferredSize().width, 25));
 
         telephonePanel.add(telephoneLabel);
         telephonePanel.add(telephone);
