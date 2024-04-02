@@ -25,6 +25,5 @@ public class ViewReservation {
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
-
     }
 }

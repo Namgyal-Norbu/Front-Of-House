@@ -42,12 +42,15 @@ public class Home {
   public void loadButtons() {
     JButton create = new JButton("Create Reservation");
     create.setBounds(75, 335, 200, 150);
+    
     create.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         System.out.println("create");
         if(e.getSource()==create){
           frame.dispose();
           CreateReservation createReservation = new CreateReservation();
+          
           try{
             createReservation.start();
           } catch(IOException ex){
@@ -59,13 +62,16 @@ public class Home {
 
     JButton view = new JButton("View Reservations");
     view.setBounds(375, 335, 200, 150);
+    
     view.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         System.out.println("view");
         if (e.getSource() == view){
           frame.dispose();
           ViewReservation viewReservation = new ViewReservation();
+          
           try{
             viewReservation.start();
           } catch(IOException ex){
@@ -77,13 +83,16 @@ public class Home {
 
     JButton serve = new JButton("Serve Table");
     serve.setBounds(675, 335, 200, 150);
+    
     serve.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         System.out.println("serve");
         if (e.getSource() == serve){
           frame.dispose();
           ServeTable serveTable = new ServeTable();
-            try {
+            
+          try {
                 serveTable.start();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -95,7 +104,5 @@ public class Home {
     panel.add(create);
     panel.add(view);
     panel.add(serve);
-
   }
-
 }
