@@ -40,13 +40,15 @@ public class SelectTable {
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Select Tables");
-        frame.setSize(500, 350);
+        frame.setSize(550, 350);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
     }
 
     public void setButton() {
+        JPanel submitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
+        submitPanel.setBackground(new Color(43, 51, 54));
         JButton submitButton = new JButton("Submit");
         submitButton.setPreferredSize(new Dimension(100, submitButton.getPreferredSize().height));
         submitButton.addActionListener(new ActionListener() {
@@ -55,18 +57,17 @@ public class SelectTable {
                 frame.dispose();
             }
         });
-        panel.add(submitButton, BorderLayout.SOUTH);
+        submitPanel.add(submitButton);
+        panel.add(submitPanel, BorderLayout.SOUTH);
     }
 
     public void tableChoices() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(0, 4, 5, 5));
+        JPanel buttonsPanel = new JPanel(new GridLayout(0, 4, 35, 5));
         buttonsPanel.setBackground(new Color(43, 51, 54));
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         for (int i = 1; i <= 15; i++) {
             JButton button = new JButton(String.valueOf(i));
-            button.setPreferredSize(new Dimension(40, 40));
-
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JButton clickedButton = (JButton) e.getSource();
