@@ -5,10 +5,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
+
+interface TableSelectionListener {
+    void onTableSelected(List<Integer> selectedTables);
+}
 
 public class CreateReservation {
     private JFrame frame;
@@ -20,10 +25,9 @@ public class CreateReservation {
     private JTextField surname;
     private JTextField telephone;
     private JDatePickerImpl date;
-    private JComboBox<Integer> hourComboBox;
-    private JComboBox<Integer> minuteComboBox;
+    private JComboBox<String> time;
     private JTextField occupants;
-    private JTextField tableNo;
+    private JButton tableNo;
 
     public CreateReservation() {
         frame = new JFrame();
@@ -36,25 +40,14 @@ public class CreateReservation {
         forename = new JTextField(20);
         surname = new JTextField(20);
         telephone = new JTextField(20);
-        occupants = new JTextField(2);
+        occupants = new JTextField(3);
 
         UtilDateModel model = new UtilDateModel();
         date = new JDatePickerImpl(new JDatePanelImpl(model));
 
-        hourComboBox = new JComboBox<>(createIntegerArray(17, 23));
-        minuteComboBox = new JComboBox<>(createIntegerArray(0, 59));
+        time = new JComboBox<>(new TimeModel());
 
-        tableNo = new JTextField(2);
-    }
-
-
-    private Integer[] createIntegerArray(int start, int end) {
-        int length = end - start + 1;
-        Integer[] array = new Integer[length];
-        for (int i = 0; i < length; i++) {
-            array[i] = start + i;
-        }
-        return array;
+        tableNo = new JButton("...");
     }
 
     public void start() throws IOException {
@@ -63,13 +56,13 @@ public class CreateReservation {
         panel.setLayout(new BorderLayout());
 
         setTitle();
-        setForm();
         loadButtons();
+        setForm();
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("FOH Service Software");
-        frame.setSize(500, 650);
+        frame.setSize(550, 650);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
@@ -112,7 +105,7 @@ public class CreateReservation {
         formPanel.setBackground(new Color(43, 51, 54));
 
         // prefix drop-down list
-        addDropDown(formPanel, new FlowLayout(FlowLayout.LEFT, 11, 5), "Prefix:", prefix);
+        addDropDown(formPanel, new FlowLayout(FlowLayout.LEFT, 30, 5), "Prefix:", prefix);
 
         // forename text field
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 11, 5), "Forename:", forename);
@@ -124,30 +117,37 @@ public class CreateReservation {
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 8, 5), "Telephone:", telephone);
 
         // calander date selector
-        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 0));
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         datePanel.setBackground(new Color(43, 51, 54));
         JLabel dateLabel = new JLabel("Date:");
         dateLabel.setForeground(Color.WHITE);
-
         datePanel.add(dateLabel);
         datePanel.add(date);
+        
         formPanel.add(datePanel);
 
         // time of day selector
-        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 20));
+        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 20));
         timePanel.setBackground(new Color(43, 51, 54));
         JLabel timeLabel = new JLabel("Time:");
         timeLabel.setForeground(Color.WHITE);
         timePanel.add(timeLabel);
-        timePanel.add(hourComboBox);
-        timePanel.add(minuteComboBox);
+        timePanel.add(time);
+        
         formPanel.add(timePanel);
 
         // occupants text field
-        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 20, 20), "Occupants:", occupants);
+        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 10, 20), "Occupants:", occupants);
 
         // Table No field
-        addField(formPanel, new FlowLayout(FlowLayout.LEFT, 10, 5), "Table No:", tableNo);
+        JPanel tabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        tabelPanel.setBackground(new Color(43, 51, 54));        
+        JLabel tableLabel = new JLabel("Table No:");
+        tableLabel.setForeground(Color.WHITE);
+
+        tabelPanel.add(tableLabel);
+        tabelPanel.add(tableNo);
+        formPanel.add(tabelPanel);
 
         panel.add(formPanel, BorderLayout.CENTER);
     }
@@ -182,6 +182,28 @@ public class CreateReservation {
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
+                }
+            }
+        });
+
+        tableNo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == tableNo) {
+                    SelectTable selectTable = new SelectTable();
+                    selectTable.start(new TableSelectionListener() {
+                        public void onTableSelected(List<Integer> selectedTables) {
+                            StringBuilder tables = new StringBuilder();
+
+                            for (int i = 0; i < selectedTables.size(); i++) {
+                                tables.append(selectedTables.get(i));
+                                if (i < selectedTables.size() - 1) {
+                                    tables.append(", ");
+                                }
+                            }
+                            tableNo.setText(tables.toString());
+                        }
+                    });
                 }
             }
         });
