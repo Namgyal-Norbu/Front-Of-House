@@ -16,18 +16,18 @@ interface TableSelectionListener {
 }
 
 public class CreateReservation {
-    private JFrame frame;
-    private JPanel panel;
-    private JLabel title;
+    private final JFrame frame;
+    private final JPanel panel;
+    private final JLabel title;
     
-    private JComboBox<String> prefix;
-    private JTextField forename;
-    private JTextField surname;
-    private JTextField telephone;
-    private JDatePickerImpl date;
-    private JComboBox<String> time;
-    private JTextField occupants;
-    private JButton tableNo;
+    private final JComboBox<String> prefix;
+    private final JTextField forename;
+    private final JTextField surname;
+    private final JTextField telephone;
+    private final JDatePickerImpl date;
+    private final JComboBox<String> time;
+    private final JTextField occupants;
+    private final JButton tableNo;
 
     public CreateReservation() {
         frame = new JFrame();
@@ -116,7 +116,7 @@ public class CreateReservation {
         // telephone text field
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 8, 5), "Telephone:", telephone);
 
-        // calander date selector
+        // calendar date selector
         JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         datePanel.setBackground(new Color(43, 51, 54));
         JLabel dateLabel = new JLabel("Date:");

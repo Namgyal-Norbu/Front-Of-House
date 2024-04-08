@@ -10,7 +10,6 @@ public class Main {
       app.start();
     
     } catch (IOException e) {
-      e.printStackTrace();
       System.out.println("failed to boot up system...");
     }
   }

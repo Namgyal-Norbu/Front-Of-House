@@ -6,10 +6,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-interface TableSelectionListener {
-    void onTableSelected(List<Integer> selectedTables);
-}
-
 public class SelectTable {
 
     private static JFrame frame;
