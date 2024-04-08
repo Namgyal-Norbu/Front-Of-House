@@ -5,6 +5,7 @@ import FOH.Home;
 public class Main {
   public static void main(String[] args) {
     System.out.println("booting up system...");
+    System.out.println("[debug log]");
     try {
       Home app = new Home();
       app.start();

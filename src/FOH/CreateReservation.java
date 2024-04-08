@@ -140,14 +140,14 @@ public class CreateReservation {
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 10, 20), "Occupants:", occupants);
 
         // Table No field
-        JPanel tabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        tabelPanel.setBackground(new Color(43, 51, 54));        
+        JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        tablePanel.setBackground(new Color(43, 51, 54));
         JLabel tableLabel = new JLabel("Table No:");
         tableLabel.setForeground(Color.WHITE);
 
-        tabelPanel.add(tableLabel);
-        tabelPanel.add(tableNo);
-        formPanel.add(tabelPanel);
+        tablePanel.add(tableLabel);
+        tablePanel.add(tableNo);
+        formPanel.add(tablePanel);
 
         panel.add(formPanel, BorderLayout.CENTER);
     }
@@ -158,53 +158,45 @@ public class CreateReservation {
 
         JButton submit = new JButton("submit");
         submit.setPreferredSize(new Dimension(125, 40));
-        submit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == submit) {
-                    //TODO: connect to database and submit form
-                    System.out.println("form submitted");
-                }
+        submit.addActionListener(e -> {
+            if (e.getSource() == submit) {
+                System.out.println("[event]: submit button clicked");
             }
         });
 
         JButton cancel = new JButton("cancel");
         cancel.setPreferredSize(new Dimension(125, 40));
-        cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == cancel) {
-                    frame.dispose();
-                    Home home = new Home();
-                    try {
-                        home.start();
-                    
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+
+        cancel.addActionListener(e -> {
+            if (e.getSource() == cancel) {
+                frame.dispose();
+                Home home = new Home();
+                try {
+                    System.out.println("[event]: cancel button clicked");
+                    home.start();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });
 
-        tableNo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == tableNo) {
-                    SelectTable selectTable = new SelectTable();
-                    selectTable.start(new TableSelectionListener() {
-                        public void onTableSelected(List<Integer> selectedTables) {
-                            StringBuilder tables = new StringBuilder();
+        tableNo.addActionListener(e -> {
+            if (e.getSource() == tableNo) {
+                System.out.println("[event]: table selector clicked");
 
-                            for (int i = 0; i < selectedTables.size(); i++) {
-                                tables.append(selectedTables.get(i));
-                                if (i < selectedTables.size() - 1) {
-                                    tables.append(", ");
-                                }
-                            }
-                            tableNo.setText(tables.toString());
+                SelectTable selectTable = new SelectTable();
+                selectTable.start(selectedTables -> {
+                    StringBuilder tables = new StringBuilder();
+
+                    for (int i = 0; i < selectedTables.size(); i++) {
+                        tables.append(selectedTables.get(i));
+                        if (i < selectedTables.size() - 1) {
+                            tables.append(", ");
                         }
-                    });
-                }
+                    }
+                    tableNo.setText(tables.toString());
+                });
             }
         });
 

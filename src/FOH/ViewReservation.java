@@ -1,6 +1,7 @@
 package FOH;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 
@@ -8,11 +9,13 @@ public class ViewReservation {
     private final JFrame frame;
     private final JPanel panel;
     private final JLabel title;
+    private final JTable reservations;
 
     public ViewReservation() {
         frame = new JFrame();
         panel = new JPanel();
         title = new JLabel("View Reservations");
+        reservations = new JTable();
     }
 
     public void start() throws IOException {
@@ -21,7 +24,7 @@ public class ViewReservation {
         panel.setLayout(new BorderLayout());
 
         setTitle();
-        setActionButtons();
+        setPage();
         setExitButton();
 
         frame.add(panel, BorderLayout.CENTER);
@@ -41,7 +44,7 @@ public class ViewReservation {
         panel.add(title, BorderLayout.NORTH);
     }
 
-    public void setActionButtons() {
+    public void setPage() {
         JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
         radioPanel.setBackground(new Color(43, 51, 54));
 
@@ -65,26 +68,63 @@ public class ViewReservation {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
         buttonPanel.setBackground(new Color(43, 51, 54));
 
-        JButton editButton = new JButton("Edit Reservation");
-        JButton deleteButton = new JButton("Delete Reservation");
-        JButton checkoutButton = new JButton("Checkout");
+        JButton edit = new JButton("Edit Reservation");
+        JButton delete = new JButton("Delete Reservation");
+        JButton checkout = new JButton("Checkout");
 
-        editButton.addActionListener(e -> {
-
-        });
-        deleteButton.addActionListener(e -> {
-
-        });
-        checkoutButton.addActionListener(e -> {
-
+        edit.addActionListener(e -> {
+            if (e.getSource() == edit) {
+                System.out.println("[event] : edit button clicked");
+            }
         });
 
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(checkoutButton);
+        delete.addActionListener(e -> {
+            if (e.getSource() == delete) {
+                System.out.println("[event] : delete button clicked");
+            }
+        });
+
+        checkout.addActionListener(e -> {
+            if (e.getSource() == checkout) {
+                System.out.println("[event] : checkout button clicked");
+            }
+        });
+
+        buttonPanel.add(edit);
+        buttonPanel.add(delete);
+        buttonPanel.add(checkout);
 
         radioPanel.add(buttonPanel);
+        setBookingTable(radioPanel);
         panel.add(radioPanel, BorderLayout.CENTER);
+    }
+
+    public void setBookingTable(JPanel p) {
+        JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        tablePanel.setBackground(new Color(43, 51, 54));
+
+        JScrollPane scrollPane = new JScrollPane(reservations);
+        scrollPane.setPreferredSize(new Dimension(800, 350));
+
+        String[] columns = {
+                "ID",
+                "Prefix",
+                "Forename",
+                "Surname",
+                "Telephone",
+                "Date",
+                "Time",
+                "Occupants",
+                "Table No."
+        };
+
+        Object[][] data = {};
+
+        DefaultTableModel model = new DefaultTableModel(data, columns);
+        reservations.setModel(model);
+
+        tablePanel.add(scrollPane);
+        p.add(tablePanel);
     }
 
     public void setExitButton() {
@@ -99,14 +139,16 @@ public class ViewReservation {
                 Home home = new Home();
                 try {
                     home.start();
+                    System.out.println("[event] : exit button clicked");
                 } catch (IOException ex) {
+                    System.out.println("[error] : failed to call " + home + " start() method");
                     throw new RuntimeException(ex);
                 }
             }
         });
 
         buttonPanel.add(exit);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
