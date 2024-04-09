@@ -65,6 +65,12 @@ public class ViewReservation {
         radioPanel.add(week);
         radioPanel.add(month);
 
+        setActionButtons(radioPanel);
+        setBookingTable(radioPanel);
+        panel.add(radioPanel, BorderLayout.CENTER);
+    }
+
+    public void setActionButtons(JPanel p) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
         buttonPanel.setBackground(new Color(43, 51, 54));
 
@@ -74,29 +80,26 @@ public class ViewReservation {
 
         edit.addActionListener(e -> {
             if (e.getSource() == edit) {
-                System.out.println("[event] : edit button clicked");
+                System.out.println("[event]: edit button clicked");
             }
         });
 
         delete.addActionListener(e -> {
             if (e.getSource() == delete) {
-                System.out.println("[event] : delete button clicked");
+                System.out.println("[event]: delete button clicked");
             }
         });
 
         checkout.addActionListener(e -> {
             if (e.getSource() == checkout) {
-                System.out.println("[event] : checkout button clicked");
+                System.out.println("[event]: checkout button clicked");
             }
         });
 
         buttonPanel.add(edit);
         buttonPanel.add(delete);
         buttonPanel.add(checkout);
-
-        radioPanel.add(buttonPanel);
-        setBookingTable(radioPanel);
-        panel.add(radioPanel, BorderLayout.CENTER);
+        p.add(buttonPanel);
     }
 
     public void setBookingTable(JPanel p) {
@@ -139,9 +142,10 @@ public class ViewReservation {
                 Home home = new Home();
                 try {
                     home.start();
-                    System.out.println("[event] : exit button clicked");
+                    System.out.println("[event]: exit button clicked");
+
                 } catch (IOException ex) {
-                    System.out.println("[error] : failed to call " + home + " start() method");
+                    System.out.println("[error]: failed to call " + home + " start() method");
                     throw new RuntimeException(ex);
                 }
             }

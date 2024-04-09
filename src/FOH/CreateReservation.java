@@ -2,9 +2,10 @@ package FOH;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -47,7 +48,7 @@ public class CreateReservation {
 
         time = new JComboBox<>(new TimeModel());
 
-        tableNo = new JButton("...");
+        tableNo = new JButton();
     }
 
     public void start() throws IOException {
@@ -162,6 +163,22 @@ public class CreateReservation {
             if (e.getSource() == submit) {
                 System.out.println("[event]: submit button clicked");
             }
+
+            try (Connection conn = JDBC.getConn()) {
+                if (prefix.getSelectedItem() == null || forename.getText().isEmpty() ||
+                        surname.getText().isEmpty() || telephone.getText().isEmpty() ||
+                        date.getModel().getValue() == null || time.getSelectedItem() == null ||
+                        occupants.getText().isEmpty() || tableNo.getText().isEmpty()) {
+
+                    JOptionPane.showMessageDialog(frame, "please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                insertSQL(conn);
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         JButton cancel = new JButton("cancel");
@@ -186,17 +203,22 @@ public class CreateReservation {
                 System.out.println("[event]: table selector clicked");
 
                 SelectTable selectTable = new SelectTable();
-                selectTable.start(selectedTables -> {
-                    StringBuilder tables = new StringBuilder();
+                try {
+                    selectTable.start(selectedTables -> {
+                        StringBuilder tables = new StringBuilder();
 
-                    for (int i = 0; i < selectedTables.size(); i++) {
-                        tables.append(selectedTables.get(i));
-                        if (i < selectedTables.size() - 1) {
-                            tables.append(", ");
+                        for (int i = 0; i < selectedTables.size(); i++) {
+                            tables.append(selectedTables.get(i));
+                            if (i < selectedTables.size() - 1) {
+                                tables.append(", ");
+                            }
                         }
-                    }
-                    tableNo.setText(tables.toString());
-                });
+                        tableNo.setText(tables.toString());
+                    });
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -206,4 +228,43 @@ public class CreateReservation {
         buttonPanel.add(submit);
         panel.add(buttonPanel, BorderLayout.SOUTH);
    }
+
+   public void insertSQL(Connection conn) throws SQLException {
+
+        String selectedPrefix = (String) prefix.getSelectedItem();
+        String selectedForename = forename.getText();
+        String selectedSurname = surname.getText();
+        String selectedTelephone = telephone.getText();
+        java.util.Date selectedDate = (java.util.Date) date.getModel().getValue();
+        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+        String selectedTime = (String) time.getSelectedItem();
+        int selectedOccupants = Integer.parseInt(occupants.getText());
+        String selectedTableNo = tableNo.getText();
+        boolean hasArrived = false;
+
+        String sql = "INSERT INTO Booking (Prefix, Forename, Surname, Telephone, Date, Time, Occupants, TableNo, HasArrived) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+
+        statement.setString(1, selectedPrefix);
+        statement.setString(2, selectedForename);
+        statement.setString(3, selectedSurname);
+        statement.setString(4, selectedTelephone);
+        statement.setDate(5, sqlDate);
+        statement.setString(6, selectedTime);
+        statement.setInt(7, selectedOccupants);
+        statement.setString(8, selectedTableNo);
+        statement.setBoolean(9, hasArrived);
+
+        if (statement.executeUpdate() > 0) {
+            frame.dispose();
+            Home home = new Home();
+            try {
+                System.out.println("[event]: reservation successfully logged");
+                home.start();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

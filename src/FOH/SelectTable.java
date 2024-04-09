@@ -3,8 +3,15 @@ package FOH;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class SelectTable {
 
@@ -22,7 +29,7 @@ public class SelectTable {
         selectedTables = new ArrayList<>();
     }
 
-    public void start(TableSelectionListener listener) {
+    public void start(TableSelectionListener listener) throws SQLException {
         selectionListener = listener;
         panel.setBackground(new Color(43, 51, 54));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
@@ -57,26 +64,25 @@ public class SelectTable {
         panel.add(submitPanel, BorderLayout.SOUTH);
     }
 
-    public void tableChoices() {
+    public void tableChoices() throws SQLException {
         JPanel buttonsPanel = new JPanel(new GridLayout(0, 4, 35, 5));
         buttonsPanel.setBackground(new Color(43, 51, 54));
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+
         for (int i = 1; i <= 15; i++) {
             JButton button = new JButton(String.valueOf(i));
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    JButton clickedButton = (JButton) e.getSource();
-                    int tableNumber = Integer.parseInt(clickedButton.getText());
-                    
-                    if (selectedTables.contains(tableNumber)) {
-                        selectedTables.remove(Integer.valueOf(tableNumber));
-                    
-                    } else {
-                        selectedTables.add(tableNumber);
-                    }
-                    updateSelectedTablesLabel();
+            button.addActionListener(e -> {
+                JButton clickedButton = (JButton) e.getSource();
+                int tableNumber = Integer.parseInt(clickedButton.getText());
+
+                if (selectedTables.contains(tableNumber)) {
+                    selectedTables.remove(Integer.valueOf(tableNumber));
+
+                } else {
+                    selectedTables.add(tableNumber);
                 }
+                updateSelectedTablesLabel();
             });
             buttonsPanel.add(button);
         }
