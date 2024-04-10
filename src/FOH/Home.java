@@ -82,10 +82,10 @@ public class Home {
     serve.addActionListener(e -> {
       if (e.getSource() == serve) {
         frame.dispose();
-        ServeTable serveTable = new ServeTable();
+        ServeSearch serveSearch = new ServeSearch();
         try {
           System.out.println("[event]: serve button clicked");
-          serveTable.start();
+          serveSearch.start();
 
         } catch (IOException ex) {
           throw new RuntimeException(ex);
