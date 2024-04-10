@@ -4,7 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,7 +22,8 @@ public class CreateReservation {
     private final JFrame frame;
     private final JPanel panel;
     private final JLabel title;
-    
+
+    private final JCheckBox isWalkIn;
     private final JComboBox<String> prefix;
     private final JTextField forename;
     private final JTextField surname;
@@ -30,10 +33,14 @@ public class CreateReservation {
     private final JTextField occupants;
     private final JButton tableNo;
 
-    public CreateReservation() {
+    public CreateReservation() throws SQLException {
+        JDBC.startConn();
+
         frame = new JFrame();
         panel = new JPanel();
         title = new JLabel("Create Reservation");
+
+        isWalkIn = new JCheckBox();
 
         String[] prefixList = {"Mr.", "Ms.", "Mrs.", "Dr."};
         prefix = new JComboBox<>(prefixList);
@@ -105,8 +112,16 @@ public class CreateReservation {
         JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
         formPanel.setBackground(new Color(43, 51, 54));
 
+        JPanel boxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        boxPanel.setBackground(new Color(43, 51, 54));
+        JLabel text = new JLabel("Walk-In:");
+        text.setForeground(Color.WHITE);
+        boxPanel.add(text);
+        boxPanel.add(isWalkIn);
+        formPanel.add(boxPanel);
+
         // prefix drop-down list
-        addDropDown(formPanel, new FlowLayout(FlowLayout.LEFT, 30, 5), "Prefix:", prefix);
+        addDropDown(formPanel, new FlowLayout(FlowLayout.LEFT, 15, 5), "Prefix:", prefix);
 
         // forename text field
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 11, 5), "Forename:", forename);
@@ -140,7 +155,7 @@ public class CreateReservation {
         // occupants text field
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 10, 20), "Occupants:", occupants);
 
-        // Table No field
+        // table No field
         JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
         tablePanel.setBackground(new Color(43, 51, 54));
         JLabel tableLabel = new JLabel("Table No:");
@@ -174,9 +189,13 @@ public class CreateReservation {
                     return;
                 }
 
-                insertSQL(conn);
+                insertBooking(conn);
 
-            } catch (SQLException ex) {
+                frame.dispose();
+                Home home = new Home();
+                home.start();
+
+            } catch (SQLException | IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -229,8 +248,9 @@ public class CreateReservation {
         panel.add(buttonPanel, BorderLayout.SOUTH);
    }
 
-   public void insertSQL(Connection conn) throws SQLException {
+    public void insertBooking(Connection conn) throws SQLException, IOException {
 
+        boolean selectedIsWalkIn = isWalkIn.isSelected();
         String selectedPrefix = (String) prefix.getSelectedItem();
         String selectedForename = forename.getText();
         String selectedSurname = surname.getText();
@@ -240,31 +260,28 @@ public class CreateReservation {
         String selectedTime = (String) time.getSelectedItem();
         int selectedOccupants = Integer.parseInt(occupants.getText());
         String selectedTableNo = tableNo.getText();
-        boolean hasArrived = false;
+        boolean isFinished = false;
 
-        String sql = "INSERT INTO Booking (Prefix, Forename, Surname, Telephone, Date, Time, Occupants, TableNo, HasArrived) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement statement = conn.prepareStatement(sql);
+        try {
+            String bookingSql = "INSERT INTO Bookings " +
+                    "(prefix, forename, surname, telephone, date, time, occupants, isWalkIn, isFinished) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement bookingStatement = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS);
 
-        statement.setString(1, selectedPrefix);
-        statement.setString(2, selectedForename);
-        statement.setString(3, selectedSurname);
-        statement.setString(4, selectedTelephone);
-        statement.setDate(5, sqlDate);
-        statement.setString(6, selectedTime);
-        statement.setInt(7, selectedOccupants);
-        statement.setString(8, selectedTableNo);
-        statement.setBoolean(9, hasArrived);
+            bookingStatement.setString(1, selectedPrefix);
+            bookingStatement.setString(2, selectedForename);
+            bookingStatement.setString(3, selectedSurname);
+            bookingStatement.setString(4, selectedTelephone);
+            bookingStatement.setDate(5, sqlDate);
+            bookingStatement.setString(6, selectedTime);
+            bookingStatement.setInt(7, selectedOccupants);
+            bookingStatement.setBoolean(8, selectedIsWalkIn);
+            bookingStatement.setBoolean(9, isFinished);
+            bookingStatement.executeUpdate();
 
-        if (statement.executeUpdate() > 0) {
-            frame.dispose();
-            Home home = new Home();
-            try {
-                System.out.println("[event]: reservation successfully logged");
-                home.start();
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
+
 }

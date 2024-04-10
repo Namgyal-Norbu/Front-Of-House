@@ -3,6 +3,7 @@ package FOH;
 import java.awt.*;
 import javax.swing.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class Home {
   private static JFrame frame;
@@ -41,16 +42,18 @@ public class Home {
   public void loadButtons() {
     JButton create = new JButton("Create Reservation");
     create.setBounds(75, 335, 200, 150);
-    
+
     create.addActionListener(e -> {
-      if(e.getSource()==create){
+      if (e.getSource() == create) {
         frame.dispose();
-        CreateReservation createReservation = new CreateReservation();
-        try{
+        CreateReservation createReservation;
+
+        try {
           System.out.println("[event]: create button clicked");
+          createReservation = new CreateReservation();
           createReservation.start();
 
-        } catch(IOException ex){
+        } catch (IOException | SQLException ex) {
           throw new RuntimeException(ex);
         }
       }
@@ -58,16 +61,16 @@ public class Home {
 
     JButton view = new JButton("View Reservations");
     view.setBounds(375, 335, 200, 150);
-    
+
     view.addActionListener(e -> {
-      if (e.getSource() == view){
+      if (e.getSource() == view) {
         frame.dispose();
         ViewReservation viewReservation = new ViewReservation();
-        try{
+        try {
           System.out.println("[event]: view button clicked");
           viewReservation.start();
 
-        } catch(IOException ex) {
+        } catch (IOException ex) {
           throw new RuntimeException(ex);
         }
       }
@@ -75,9 +78,9 @@ public class Home {
 
     JButton serve = new JButton("Serve Table");
     serve.setBounds(675, 335, 200, 150);
-    
+
     serve.addActionListener(e -> {
-      if (e.getSource() == serve){
+      if (e.getSource() == serve) {
         frame.dispose();
         ServeTable serveTable = new ServeTable();
         try {

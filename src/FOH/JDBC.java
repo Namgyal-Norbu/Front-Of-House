@@ -11,18 +11,17 @@ public class JDBC {
     public static void startConn() throws SQLException {
         try {
             String url = "jdbc:mysql://smcse-stuproj00.city.ac.uk:3306/in2033t28";
-            String username = "in2033t28_d";
-            String password = "oExQzkCEgLw";
+            String username = "in2033t28_a";
+            String password = "acGHaHnXjsA";
 
             conn = DriverManager.getConnection(url, username, password);
 
         } catch (SQLException e) {
+            closeConn(conn);
             throw new SQLException(e);
 
         } finally {
-            if (conn != null) {
-                closeConn(conn);
-            }
+            closeConn(conn);
         }
     }
 
@@ -30,10 +29,10 @@ public class JDBC {
         return conn;
     }
 
-    public static void closeConn(Connection connection) throws SQLException {
+    public static void closeConn(Connection conn) throws SQLException {
         try {
-            if (connection != null) {
-                connection.close();
+            if (conn != null) {
+                conn.close();
             }
 
         } catch (SQLException e) {
