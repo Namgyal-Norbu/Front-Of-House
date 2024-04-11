@@ -3,11 +3,7 @@ package FOH;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -262,26 +258,41 @@ public class CreateReservation {
         String selectedTableNo = tableNo.getText();
         boolean isFinished = false;
 
-        try {
-            String bookingSql = "INSERT INTO Bookings " +
-                    "(prefix, forename, surname, telephone, date, time, occupants, isWalkIn, isFinished) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement bookingStatement = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS);
+        String bookingSql = "INSERT INTO Bookings " +
+                "(prefix, forename, surname, telephone, date, time, occupants, isWalkIn, isFinished) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement bookingStatement = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS);
 
-            bookingStatement.setString(1, selectedPrefix);
-            bookingStatement.setString(2, selectedForename);
-            bookingStatement.setString(3, selectedSurname);
-            bookingStatement.setString(4, selectedTelephone);
-            bookingStatement.setDate(5, sqlDate);
-            bookingStatement.setString(6, selectedTime);
-            bookingStatement.setInt(7, selectedOccupants);
-            bookingStatement.setBoolean(8, selectedIsWalkIn);
-            bookingStatement.setBoolean(9, isFinished);
-            bookingStatement.executeUpdate();
+        bookingStatement.setString(1, selectedPrefix);
+        bookingStatement.setString(2, selectedForename);
+        bookingStatement.setString(3, selectedSurname);
+        bookingStatement.setString(4, selectedTelephone);
+        bookingStatement.setDate(5, sqlDate);
+        bookingStatement.setString(6, selectedTime);
+        bookingStatement.setInt(7, selectedOccupants);
+        bookingStatement.setBoolean(8, selectedIsWalkIn);
+        bookingStatement.setBoolean(9, isFinished);
+        bookingStatement.executeUpdate();
 
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+        ResultSet generatedKeys = bookingStatement.getGeneratedKeys();
+        int bookingID;
+        if (generatedKeys.next()) {
+            bookingID = generatedKeys.getInt(1);
+
+        } else {
+            throw new SQLException("Failed to retrieve bookingID for the new booking.");
         }
-    }
 
+        String[] tableNumbers = selectedTableNo.split(", ");
+
+        String bookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, NOW())";
+        PreparedStatement bookedTablesStatement = conn.prepareStatement(bookedTablesSql);
+        for (String tableNumber : tableNumbers) {
+            int tableID = Integer.parseInt(tableNumber);
+            bookedTablesStatement.setInt(1, bookingID);
+            bookedTablesStatement.setInt(2, tableID);
+            bookedTablesStatement.addBatch();
+        }
+        bookedTablesStatement.executeBatch();
+    }
 }

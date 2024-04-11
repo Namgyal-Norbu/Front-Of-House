@@ -19,9 +19,6 @@ public class JDBC {
         } catch (SQLException e) {
             closeConn(conn);
             throw new SQLException(e);
-
-        } finally {
-            closeConn(conn);
         }
     }
 
