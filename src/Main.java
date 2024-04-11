@@ -9,6 +9,7 @@ public class Main {
     System.out.println("booting up system...");
     System.out.println("[debug log]");
     try {
+      JDBC.startConn();
       Home app = new Home();
       app.start();
 

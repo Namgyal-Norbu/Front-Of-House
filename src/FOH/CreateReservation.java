@@ -4,15 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.*;
-import java.util.List;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
-
-interface TableSelectionListener {
-    void onTableSelected(List<Integer> selectedTables);
-}
 
 public class CreateReservation {
     private final JFrame frame;
@@ -30,8 +25,6 @@ public class CreateReservation {
     private final JButton tableNo;
 
     public CreateReservation() throws SQLException {
-        JDBC.startConn();
-
         frame = new JFrame();
         panel = new JPanel();
         title = new JLabel("Create Reservation");
@@ -219,9 +212,13 @@ public class CreateReservation {
 
                 SelectTable selectTable = new SelectTable();
                 try {
-                    selectTable.start(selectedTables -> {
-                        StringBuilder tables = new StringBuilder();
+                    java.util.Date selectedDate = (java.util.Date) date.getModel().getValue();
+                    String selectedTime = (String) time.getSelectedItem();
+                    boolean walkIn = isWalkIn.isSelected();
 
+                    selectTable.start(selectedTables -> {
+
+                        StringBuilder tables = new StringBuilder();
                         for (int i = 0; i < selectedTables.size(); i++) {
                             tables.append(selectedTables.get(i));
                             if (i < selectedTables.size() - 1) {
@@ -229,7 +226,8 @@ public class CreateReservation {
                             }
                         }
                         tableNo.setText(tables.toString());
-                    });
+
+                    }, selectedDate, selectedTime, walkIn);
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -245,7 +243,6 @@ public class CreateReservation {
    }
 
     public void insertBooking(Connection conn) throws SQLException, IOException {
-
         boolean selectedIsWalkIn = isWalkIn.isSelected();
         String selectedPrefix = (String) prefix.getSelectedItem();
         String selectedForename = forename.getText();
@@ -285,14 +282,17 @@ public class CreateReservation {
 
         String[] tableNumbers = selectedTableNo.split(", ");
 
-        String bookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, NOW())";
+        String bookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, ?)";
         PreparedStatement bookedTablesStatement = conn.prepareStatement(bookedTablesSql);
+        Timestamp bookingTimestamp = Timestamp.valueOf(sqlDate + " " + selectedTime + ":00"); // Combine date and time into a timestamp
         for (String tableNumber : tableNumbers) {
             int tableID = Integer.parseInt(tableNumber);
             bookedTablesStatement.setInt(1, bookingID);
             bookedTablesStatement.setInt(2, tableID);
+            bookedTablesStatement.setTimestamp(3, bookingTimestamp);
             bookedTablesStatement.addBatch();
         }
         bookedTablesStatement.executeBatch();
     }
+
 }
