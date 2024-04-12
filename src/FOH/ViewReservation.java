@@ -4,6 +4,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ViewReservation {
     private final JFrame frame;
@@ -26,6 +30,7 @@ public class ViewReservation {
         setTitle();
         setPage();
         setExitButton();
+        getBookings();
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -128,6 +133,41 @@ public class ViewReservation {
 
         tablePanel.add(scrollPane);
         p.add(tablePanel);
+    }
+
+    public void getBookings() {
+        DefaultTableModel model = (DefaultTableModel) reservations.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        try {
+            Connection conn = JDBC.getConn();
+
+            String sql = "SELECT b.bookingID, b.prefix, b.forename, b.surname, b.telephone, b.date, " +
+                    "b.time, b.occupants, GROUP_CONCAT(bt.tableID ORDER BY bt.tableID SEPARATOR ', ') " +
+                    "AS tables FROM Bookings b INNER JOIN BookedTables bt ON b.bookingID = bt.bookingID " +
+                    "GROUP BY b.bookingID";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                int bookingID = rs.getInt("bookingID");
+                String prefix = rs.getString("prefix");
+                String forename = rs.getString("forename");
+                String surname = rs.getString("surname");
+                String telephone = rs.getString("telephone");
+                String date = rs.getString("date");
+                String time = rs.getString("time");
+                int occupants = rs.getInt("occupants");
+                String tableNumbers = rs.getString("tables");
+
+                // Add a row to the table model
+                model.addRow(new Object[]{bookingID, prefix, forename, surname, telephone, date, time, occupants, tableNumbers});
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setExitButton() {
