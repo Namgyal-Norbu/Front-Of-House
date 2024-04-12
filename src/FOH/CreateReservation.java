@@ -195,7 +195,14 @@ public class CreateReservation {
         cancel.addActionListener(e -> {
             if (e.getSource() == cancel) {
                 frame.dispose();
-                Home home = new Home();
+                Home home = null;
+                try {
+                    home = new Home();
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
                 try {
                     System.out.println("[event]: cancel button clicked");
                     home.start();
@@ -243,56 +250,61 @@ public class CreateReservation {
    }
 
     public void insertBooking(Connection conn) throws SQLException, IOException {
-        boolean selectedIsWalkIn = isWalkIn.isSelected();
-        String selectedPrefix = (String) prefix.getSelectedItem();
-        String selectedForename = forename.getText();
-        String selectedSurname = surname.getText();
-        String selectedTelephone = telephone.getText();
-        java.util.Date selectedDate = (java.util.Date) date.getModel().getValue();
-        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
-        String selectedTime = (String) time.getSelectedItem();
-        int selectedOccupants = Integer.parseInt(occupants.getText());
-        String selectedTableNo = tableNo.getText();
-        boolean isFinished = false;
+        try {
+            boolean selectedIsWalkIn = isWalkIn.isSelected();
+            String selectedPrefix = (String) prefix.getSelectedItem();
+            String selectedForename = forename.getText();
+            String selectedSurname = surname.getText();
+            String selectedTelephone = telephone.getText();
+            java.util.Date selectedDate = (java.util.Date) date.getModel().getValue();
+            java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+            String selectedTime = (String) time.getSelectedItem();
+            int selectedOccupants = Integer.parseInt(occupants.getText());
+            String selectedTableNo = tableNo.getText();
+            boolean isFinished = false;
 
-        String bookingSql = "INSERT INTO Bookings " +
-                "(prefix, forename, surname, telephone, date, time, occupants, isWalkIn, isFinished) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement bookingStatement = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS);
+            String bookingSql = "INSERT INTO Bookings " +
+                    "(prefix, forename, surname, telephone, date, time, occupants, isWalkIn, isFinished) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement bookingStatement = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS);
 
-        bookingStatement.setString(1, selectedPrefix);
-        bookingStatement.setString(2, selectedForename);
-        bookingStatement.setString(3, selectedSurname);
-        bookingStatement.setString(4, selectedTelephone);
-        bookingStatement.setDate(5, sqlDate);
-        bookingStatement.setString(6, selectedTime);
-        bookingStatement.setInt(7, selectedOccupants);
-        bookingStatement.setBoolean(8, selectedIsWalkIn);
-        bookingStatement.setBoolean(9, isFinished);
-        bookingStatement.executeUpdate();
+            bookingStatement.setString(1, selectedPrefix);
+            bookingStatement.setString(2, selectedForename);
+            bookingStatement.setString(3, selectedSurname);
+            bookingStatement.setString(4, selectedTelephone);
+            bookingStatement.setDate(5, sqlDate);
+            bookingStatement.setString(6, selectedTime);
+            bookingStatement.setInt(7, selectedOccupants);
+            bookingStatement.setBoolean(8, selectedIsWalkIn);
+            bookingStatement.setBoolean(9, isFinished);
+            bookingStatement.executeUpdate();
 
-        ResultSet generatedKeys = bookingStatement.getGeneratedKeys();
-        int bookingID;
-        if (generatedKeys.next()) {
-            bookingID = generatedKeys.getInt(1);
+            ResultSet generatedKeys = bookingStatement.getGeneratedKeys();
+            int bookingID;
+            if (generatedKeys.next()) {
+                bookingID = generatedKeys.getInt(1);
 
-        } else {
-            throw new SQLException("Failed to retrieve bookingID for the new booking.");
+            } else {
+                throw new SQLException("Failed to retrieve bookingID for the new booking.");
+            }
+
+            String[] tableNumbers = selectedTableNo.split(", ");
+
+            String bookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, ?)";
+            PreparedStatement bookedTablesStatement = conn.prepareStatement(bookedTablesSql);
+            Timestamp bookingTimestamp = Timestamp.valueOf(sqlDate + " " + selectedTime + ":00"); // Combine date and time into a timestamp
+            for (String tableNumber : tableNumbers) {
+                int tableID = Integer.parseInt(tableNumber);
+                bookedTablesStatement.setInt(1, bookingID);
+                bookedTablesStatement.setInt(2, tableID);
+                bookedTablesStatement.setTimestamp(3, bookingTimestamp);
+                bookedTablesStatement.addBatch();
+            }
+            bookedTablesStatement.executeBatch();
+
+        } finally {
+            JDBC.closeConn(conn);
         }
-
-        String[] tableNumbers = selectedTableNo.split(", ");
-
-        String bookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, ?)";
-        PreparedStatement bookedTablesStatement = conn.prepareStatement(bookedTablesSql);
-        Timestamp bookingTimestamp = Timestamp.valueOf(sqlDate + " " + selectedTime + ":00"); // Combine date and time into a timestamp
-        for (String tableNumber : tableNumbers) {
-            int tableID = Integer.parseInt(tableNumber);
-            bookedTablesStatement.setInt(1, bookingID);
-            bookedTablesStatement.setInt(2, tableID);
-            bookedTablesStatement.setTimestamp(3, bookingTimestamp);
-            bookedTablesStatement.addBatch();
-        }
-        bookedTablesStatement.executeBatch();
     }
 
 }

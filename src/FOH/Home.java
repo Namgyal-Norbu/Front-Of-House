@@ -9,7 +9,9 @@ public class Home {
   private static JFrame frame;
   private static JPanel panel;
 
-  public Home() {
+  public Home() throws SQLException {
+    JDBC.startConn();
+
     frame = new JFrame();
     panel = new JPanel();
   }
