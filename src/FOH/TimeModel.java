@@ -9,14 +9,14 @@ public class TimeModel  extends AbstractListModel<String> implements ComboBoxMod
     private String[] timeValues;
     private String selectedTime;
 
-    public TimeModel() {
+    public TimeModel(String initTime) {
         generateTimeValues();
-        selectedTime = timeValues[0]; 
+        setSelectedItem(initTime);
     }
 
     private void generateTimeValues() {
         DecimalFormat df = new DecimalFormat("00");
-        int totalSlots = (23 - 17) * 4; // Calculate total slots from 17:00 to 22:45
+        int totalSlots = (23 - 17) * 4;
         timeValues = new String[totalSlots];
         for (int i = 0; i < totalSlots; i++) {
             int hour = (i / 4) + 17;

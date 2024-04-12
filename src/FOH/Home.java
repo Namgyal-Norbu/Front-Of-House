@@ -55,7 +55,7 @@ public class Home {
           createReservation = new CreateReservation();
           createReservation.start();
 
-        } catch (IOException | SQLException ex) {
+        } catch (IOException ex) {
           throw new RuntimeException(ex);
         }
       }

@@ -9,11 +9,12 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
-public class CreateReservation {
+public class EditReservation {
     private final JFrame frame;
     private final JPanel panel;
     private final JLabel title;
 
+    private  final int bookingID;
     private final JCheckBox isWalkIn;
     private final JComboBox<String> prefix;
     private final JTextField forename;
@@ -24,28 +25,42 @@ public class CreateReservation {
     private final JTextField occupants;
     private final JButton tableNo;
 
-    public CreateReservation() {
+    public EditReservation(int selectedBookingID, boolean isWalkInSelected, String selectedPrefix, String selectedForename,
+                           String selectedSurname, String selectedTelephone, UtilDateModel selectedDateModel,
+                           String selectedTime, Integer selectedOccupants, String selectedTableNo) {
+
         frame = new JFrame();
         panel = new JPanel();
-        title = new JLabel("Create Reservation");
+        title = new JLabel("Edit Reservation");
+
+        bookingID = selectedBookingID;
 
         isWalkIn = new JCheckBox();
+        isWalkIn.setSelected(isWalkInSelected);
 
         String[] prefixList = {"Mr.", "Ms.", "Mrs.", "Dr."};
         prefix = new JComboBox<>(prefixList);
+        prefix.setSelectedItem(selectedPrefix);
 
         forename = new JTextField(20);
-        surname = new JTextField(20);
-        telephone = new JTextField(20);
-        occupants = new JTextField(3);
+        forename.setText(selectedForename);
 
-        UtilDateModel model = new UtilDateModel();
+        surname = new JTextField(20);
+        surname.setText(selectedSurname);
+
+        telephone = new JTextField(20);
+        telephone.setText(selectedTelephone);
+
+        occupants = new JTextField(3);
+        occupants.setText(selectedOccupants.toString());
+
+        UtilDateModel model = new UtilDateModel(selectedDateModel.getValue());
         date = new JDatePickerImpl(new JDatePanelImpl(model));
 
+        selectedTime = selectedTime.substring(0, selectedTime.length() - 3);
+        time = new JComboBox<>(new TimeModel(selectedTime));
 
-        time = new JComboBox<>(new TimeModel("17:00"));
-
-        tableNo = new JButton();
+        tableNo = new JButton(selectedTableNo);
     }
 
     public void start() throws IOException {
@@ -58,7 +73,6 @@ public class CreateReservation {
         setForm();
 
         frame.add(panel, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("FOH Service Software");
         frame.setSize(550, 650);
         frame.setLocationRelativeTo(null);
@@ -77,7 +91,7 @@ public class CreateReservation {
     public void addField(JPanel panel, FlowLayout layout ,String label, JTextField field) {
         JPanel fieldPanel = new JPanel(layout);
         fieldPanel.setBackground(new Color(43, 51, 54));
-        
+
         JLabel text = new JLabel(label);
         text.setForeground(Color.WHITE);
 
@@ -89,7 +103,7 @@ public class CreateReservation {
     public void addDropDown(JPanel panel, FlowLayout layout ,String label, JComboBox<String> dropBox) {
         JPanel fieldPanel = new JPanel(layout);
         fieldPanel.setBackground(new Color(43, 51, 54));
-        
+
         JLabel text = new JLabel(label);
         text.setForeground(Color.WHITE);
 
@@ -118,7 +132,7 @@ public class CreateReservation {
 
         // surname text field
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 18, 5), "Surname:", surname);
-        
+
         // telephone text field
         addField(formPanel, new FlowLayout(FlowLayout.LEFT, 8, 5), "Telephone:", telephone);
 
@@ -139,7 +153,7 @@ public class CreateReservation {
         timeLabel.setForeground(Color.WHITE);
         timePanel.add(timeLabel);
         timePanel.add(time);
-        
+
         formPanel.add(timePanel);
 
         // occupants text field
@@ -179,7 +193,7 @@ public class CreateReservation {
                     return;
                 }
 
-                insertBooking(conn);
+                updateBooking(conn);
 
                 frame.dispose();
                 Home home = new Home();
@@ -196,17 +210,11 @@ public class CreateReservation {
         cancel.addActionListener(e -> {
             if (e.getSource() == cancel) {
                 frame.dispose();
-                Home home;
-                try {
-                    home = new Home();
-
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
 
                 try {
                     System.out.println("[event]: cancel button clicked");
-                    home.start();
+                    ViewReservation view = new ViewReservation();
+                    view.start();
 
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -253,9 +261,9 @@ public class CreateReservation {
         buttonPanel.add(cancel);
         buttonPanel.add(submit);
         panel.add(buttonPanel, BorderLayout.SOUTH);
-   }
+    }
 
-    public void insertBooking(Connection conn) throws SQLException, IOException {
+    public void updateBooking(Connection conn) throws SQLException, IOException {
         try {
             boolean selectedIsWalkIn = isWalkIn.isSelected();
             String selectedPrefix = (String) prefix.getSelectedItem();
@@ -267,46 +275,40 @@ public class CreateReservation {
             String selectedTime = (String) time.getSelectedItem();
             int selectedOccupants = Integer.parseInt(occupants.getText());
             String selectedTableNo = tableNo.getText();
-            boolean isFinished = false;
 
-            String bookingSql = "INSERT INTO Bookings " +
-                    "(prefix, forename, surname, telephone, date, time, occupants, isWalkIn, isFinished) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement bookingStatement = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS);
+            String updateBookingSql = "UPDATE Bookings SET prefix=?, forename=?, surname=?, telephone=?, " +
+                    "date=?, time=?, occupants=?, isWalkIn=? WHERE bookingID=?";
+            PreparedStatement updateBookingStatement = conn.prepareStatement(updateBookingSql);
 
-            bookingStatement.setString(1, selectedPrefix);
-            bookingStatement.setString(2, selectedForename);
-            bookingStatement.setString(3, selectedSurname);
-            bookingStatement.setString(4, selectedTelephone);
-            bookingStatement.setDate(5, sqlDate);
-            bookingStatement.setString(6, selectedTime);
-            bookingStatement.setInt(7, selectedOccupants);
-            bookingStatement.setBoolean(8, selectedIsWalkIn);
-            bookingStatement.setBoolean(9, isFinished);
-            bookingStatement.executeUpdate();
+            updateBookingStatement.setString(1, selectedPrefix);
+            updateBookingStatement.setString(2, selectedForename);
+            updateBookingStatement.setString(3, selectedSurname);
+            updateBookingStatement.setString(4, selectedTelephone);
+            updateBookingStatement.setDate(5, sqlDate);
+            updateBookingStatement.setString(6, selectedTime);
+            updateBookingStatement.setInt(7, selectedOccupants);
+            updateBookingStatement.setBoolean(8, selectedIsWalkIn);
+            updateBookingStatement.setInt(9, bookingID);
+            updateBookingStatement.executeUpdate();
 
-            ResultSet generatedKeys = bookingStatement.getGeneratedKeys();
-            int bookingID;
-            if (generatedKeys.next()) {
-                bookingID = generatedKeys.getInt(1);
 
-            } else {
-                throw new SQLException("Failed to retrieve bookingID for the new booking.");
-            }
+            String deleteBookedTablesSql = "DELETE FROM BookedTables WHERE bookingID = ?";
+            PreparedStatement deleteBookedTablesStatement = conn.prepareStatement(deleteBookedTablesSql);
+            deleteBookedTablesStatement.setInt(1, bookingID);
+            deleteBookedTablesStatement.executeUpdate();
 
             String[] tableNumbers = selectedTableNo.split(", ");
-
-            String bookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, ?)";
-            PreparedStatement bookedTablesStatement = conn.prepareStatement(bookedTablesSql);
+            String insertBookedTablesSql = "INSERT INTO BookedTables (bookingID, tableID, bookedTime) VALUES (?, ?, ?)";
+            PreparedStatement insertBookedTablesStatement = conn.prepareStatement(insertBookedTablesSql);
             Timestamp bookingTimestamp = Timestamp.valueOf(sqlDate + " " + selectedTime + ":00"); // Combine date and time into a timestamp
             for (String tableNumber : tableNumbers) {
                 int tableID = Integer.parseInt(tableNumber);
-                bookedTablesStatement.setInt(1, bookingID);
-                bookedTablesStatement.setInt(2, tableID);
-                bookedTablesStatement.setTimestamp(3, bookingTimestamp);
-                bookedTablesStatement.addBatch();
+                insertBookedTablesStatement.setInt(1, bookingID);
+                insertBookedTablesStatement.setInt(2, tableID);
+                insertBookedTablesStatement.setTimestamp(3, bookingTimestamp);
+                insertBookedTablesStatement.addBatch();
             }
-            bookedTablesStatement.executeBatch();
+            insertBookedTablesStatement.executeBatch();
 
         } finally {
             JDBC.closeConn(conn);

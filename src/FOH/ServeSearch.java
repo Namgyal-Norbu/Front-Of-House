@@ -27,7 +27,7 @@ public class ServeSearch {
         title = new JLabel("Enter Booking Details");
         UtilDateModel model = new UtilDateModel();
         date = new JDatePickerImpl(new JDatePanelImpl(model));
-        time = new JComboBox<>(new TimeModel());
+        time = new JComboBox<>(new TimeModel("17:00"));
     }
 
     public void start() throws IOException {
