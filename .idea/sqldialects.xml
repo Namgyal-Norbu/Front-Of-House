@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/src/FOH/CreateReservation.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/FOH/EditReservation.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/FOH/SelectTable.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/FOH/ServeSearch.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/FOH/ViewReservation.java" dialect="GenericSQL" />
   </component>
 </project>

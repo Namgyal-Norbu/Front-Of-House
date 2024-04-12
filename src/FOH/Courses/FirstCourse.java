@@ -1,11 +1,13 @@
-package FOH;
+package FOH.Courses;
+
+import FOH.ServeTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 
-public class ThirdCourse {
+public class FirstCourse {
 
     private JFrame frame;
     private JPanel mainPanel;
@@ -19,7 +21,7 @@ public class ThirdCourse {
     private final Font commonFont = new Font("Arial", Font.BOLD, 24); // Example size
     private final Color fontColor = Color.WHITE;
 
-    public ThirdCourse() {
+    public FirstCourse() {
         frame = new JFrame("FOH Service Software");
         mainPanel = new JPanel(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

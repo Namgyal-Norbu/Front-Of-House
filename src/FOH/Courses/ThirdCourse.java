@@ -1,12 +1,13 @@
-package FOH;
+package FOH.Courses;
+
+import FOH.ServeTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.IOException;
 
-public class SecondCourse {
+public class ThirdCourse {
 
     private JFrame frame;
     private JPanel mainPanel;
@@ -20,7 +21,7 @@ public class SecondCourse {
     private final Font commonFont = new Font("Arial", Font.BOLD, 24); // Example size
     private final Color fontColor = Color.WHITE;
 
-    public SecondCourse() {
+    public ThirdCourse() {
         frame = new JFrame("FOH Service Software");
         mainPanel = new JPanel(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,8 +75,6 @@ public class SecondCourse {
         });
         JButton add = new JButton("Add");
         add.setPreferredSize(new Dimension(100, 50));
-
-
         buttonPanel.add(exit);
         buttonPanel.add(add);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -88,7 +87,7 @@ public class SecondCourse {
         scrollPane.setPreferredSize(new Dimension(800, 350));
 
         String[] columns = {
-               "Dish",
+                "Dish",
                 "Price",
                 "Quantity",
                 "Total"

@@ -1,4 +1,8 @@
 package FOH;
+import FOH.Courses.FirstCourse;
+import FOH.Courses.SecondCourse;
+import FOH.Courses.ThirdCourse;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;

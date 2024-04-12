@@ -7,127 +7,180 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ServeSearch {
 
     private static JFrame frame;
     private static JPanel panel;
-
-    private final JDatePickerImpl date;
-    private final JComboBox<String> time;
-
     private final JLabel title;
+
+    private final JTextField forename;
+    private final JTextField telephone;
+    private final JDatePickerImpl date;
 
     public ServeSearch() {
         frame = new JFrame();
         panel = new JPanel(new BorderLayout());
         title = new JLabel("Enter Booking Details");
+
+        forename = new JTextField(15);
+        telephone = new JTextField(15);
+
         UtilDateModel model = new UtilDateModel();
         date = new JDatePickerImpl(new JDatePanelImpl(model));
-        time = new JComboBox<>(new TimeModel("17:00"));
     }
 
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
-        search();
+        panel.setBorder(BorderFactory.createEmptyBorder());
+        panel.setLayout(new BorderLayout());
+
+        loadButtons();
         setTitle();
+        setForm();
+
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("FOH Service Software");
-        frame.setSize(950, 650);
+        frame.setSize(450, 450);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
     }
 
     public void setTitle() {
-        title.setFont(new Font("Arial", Font.BOLD, 40));
+        title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
         title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(50, 0, 85, 0));
+        title.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         panel.add(title, BorderLayout.NORTH);
     }
 
-    public void search() {
-        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+    public void setForm() {
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 11, 30));
+        namePanel.setBackground(new Color(43, 51, 54));
+        JLabel nameLabel = new JLabel("Forename:");
+        nameLabel.setForeground(Color.WHITE);
+        namePanel.add(nameLabel);
+        namePanel.add(forename);
+
+        JPanel telephonePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 10));
+        telephonePanel.setBackground(new Color(43, 51, 54));
+        JLabel telephoneLabel = new JLabel("Telephone:");
+        telephoneLabel.setForeground(Color.WHITE);
+        telephonePanel.add(telephoneLabel);
+        telephonePanel.add(telephone);
+
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
         datePanel.setBackground(new Color(43, 51, 54));
         JLabel dateLabel = new JLabel("Date:");
         dateLabel.setForeground(Color.WHITE);
-        date.getComponent(0).setPreferredSize(new Dimension(200, 200)); // Example, adjust as necessary;
         datePanel.add(dateLabel);
         datePanel.add(date);
-        JLabel timeLabel = new JLabel("Time:");
-        timeLabel.setForeground(Color.WHITE);
-        time.setPreferredSize(new Dimension(125, 100));
-        datePanel.add(timeLabel);
-        datePanel.add(time);
 
-
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 20));
-        inputPanel.setBackground(new Color(43, 51, 54));
-        JTextField textField = new JTextField(20);
-        JLabel tableID = new JLabel("Enter Table ID:");
-        tableID.setForeground(Color.WHITE);
-        inputPanel.add(tableID);
-        inputPanel.add(textField);
-        JButton search = new JButton("Submit");
-        search.setPreferredSize(new Dimension(120, 40));
-        search.addActionListener(e -> {
-            String userInput = textField.getText();
-
-            Date selectedDate = (Date) date.getModel().getValue();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String dateString = selectedDate != null ? dateFormat.format(selectedDate) : "No date selected";
-            String selectedTime = (String) time.getSelectedItem();
-            String timeString = selectedTime != null ? selectedTime : "No time selected";
-            try {
-                frame.dispose();
-                System.out.println("[event]: Exit button clicked");
-                ServeTable Servetable = new ServeTable();
-                Servetable.start();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-
-
-            System.out.println("Welcome " + userInput + ",Date: " + dateString + ", Time " + timeString);
-        });
-        inputPanel.add(search);
-
-
-        JPanel dateTimeContainer = new JPanel();
-        dateTimeContainer.add(datePanel);
-
-        dateTimeContainer.setLayout(new BoxLayout(dateTimeContainer, BoxLayout.Y_AXIS));
-        dateTimeContainer.add(inputPanel);
-
-
-        JButton exit = new JButton("Exit");
-        exit.setBounds(50, 380, 100, 50);
-        exit.setPreferredSize(new Dimension(120, 40));
-        inputPanel.add(exit);
-
-        exit.addActionListener(e -> {
-            frame.dispose();
-            Home home = null;
-            try {
-                home = new Home();
-
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-
-            try {
-                System.out.println("[event]: Exit button clicked");
-                home.start();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        panel.add(dateTimeContainer, BorderLayout.CENTER);
+        namePanel.add(telephonePanel);
+        namePanel.add(datePanel);
+        panel.add(namePanel);
     }
 
+    public void loadButtons() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        buttonPanel.setBackground(new Color(43, 51, 54));
+
+        JButton submit = new JButton("submit");
+        submit.setPreferredSize(new Dimension(125, 40));
+        submit.addActionListener(e -> {
+            if (e.getSource() == submit) {
+                System.out.println("[event]: submit button clicked");
+                String forenameText = forename.getText();
+                String telephoneText = telephone.getText();
+                Date selectedDate = (Date) date.getModel().getValue();
+
+                searchBooking(forenameText, telephoneText, selectedDate);
+            }
+
+        });
+
+        JButton cancel = new JButton("cancel");
+        cancel.setPreferredSize(new Dimension(125, 40));
+        cancel.addActionListener(e -> {
+            if (e.getSource() == cancel) {
+                frame.dispose();
+                Home home;
+                try {
+                    home = new Home();
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                try {
+                    System.out.println("[event]: cancel button clicked");
+                    home.start();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
+
+        buttonPanel.add(cancel);
+        buttonPanel.add(submit);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    public void searchBooking(String forenameText, String telephoneText, Date selectedDate) {
+
+        try {
+            Connection conn = JDBC.getConn();
+
+            String sql = "SELECT * FROM Bookings WHERE forename = ? AND telephone = ? AND date = ?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, forenameText);
+            statement.setString(2, telephoneText);
+            statement.setDate(3, new java.sql.Date(selectedDate.getTime()));
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int bookingID = resultSet.getInt("bookingID");
+                //System.out.println("[search] Booking found with ID: " + bookingID);
+
+                int ID = resultSet.getInt("bookingID");
+                String prefix = resultSet.getString("prefix");
+                String forename = resultSet.getString("forename");
+                String surname = resultSet.getString("surname");
+                String telephone = resultSet.getString("telephone");
+                Date date = resultSet.getDate("date");
+                String time = resultSet.getString("time");
+                int occupants = resultSet.getInt("occupants");
+                boolean isWalkIn = resultSet.getBoolean("isWalkIn");
+
+                // Print out the data
+                System.out.println("Booking found:");
+                System.out.println("Booking ID: " + ID);
+                System.out.println("Prefix: " + prefix);
+                System.out.println("Forename: " + forename);
+                System.out.println("Surname: " + surname);
+                System.out.println("Telephone: " + telephone);
+                System.out.println("Date: " + date);
+                System.out.println("Time: " + time);
+                System.out.println("Occupants: " + occupants);
+                System.out.println("Is Walk-in: " + isWalkIn);
+
+            } else {
+                System.out.println("No booking found with the given details.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
