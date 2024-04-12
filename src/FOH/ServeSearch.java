@@ -83,6 +83,7 @@ public class ServeSearch {
             String selectedTime = (String) time.getSelectedItem();
             String timeString = selectedTime != null ? selectedTime : "No time selected";
             try {
+                frame.dispose();
                 System.out.println("[event]: Exit button clicked");
                 ServeTable Servetable = new ServeTable();
                 Servetable.start();
