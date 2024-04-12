@@ -7,6 +7,7 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -111,7 +112,14 @@ public class ServeSearch {
 
         exit.addActionListener(e -> {
             frame.dispose();
-            Home home = new Home();
+            Home home = null;
+            try {
+                home = new Home();
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
             try {
                 System.out.println("[event]: Exit button clicked");
                 home.start();

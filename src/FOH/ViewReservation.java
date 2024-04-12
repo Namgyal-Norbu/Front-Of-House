@@ -4,6 +4,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ViewReservation {
     private final JFrame frame;
@@ -26,6 +30,7 @@ public class ViewReservation {
         setTitle();
         setPage();
         setExitButton();
+        getBookings();
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,7 +91,26 @@ public class ViewReservation {
 
         delete.addActionListener(e -> {
             if (e.getSource() == delete) {
-                System.out.println("[event]: delete button clicked");
+                int selectedRow = reservations.getSelectedRow();
+                if (selectedRow != -1) {
+                    int option = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete this reservation?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                    if (option == JOptionPane.YES_OPTION) {
+                        DefaultTableModel model = (DefaultTableModel) reservations.getModel();
+                        int bookingID = (int) model.getValueAt(selectedRow, 0); // Assuming the reservation ID is in the first column
+
+                        try {
+                            deleteReservation(bookingID);
+                            model.removeRow(selectedRow);
+
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(frame, "Failed to delete reservation from database.", "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Please select a reservation to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -130,6 +154,45 @@ public class ViewReservation {
         p.add(tablePanel);
     }
 
+    public void getBookings() {
+        DefaultTableModel model = (DefaultTableModel) reservations.getModel();
+        model.setRowCount(0);
+
+        try {
+            Connection conn = JDBC.getConn();
+            if (conn == null) {
+                JDBC.startConn();
+                conn = JDBC.getConn();
+            }
+
+            String sql = "SELECT b.bookingID, b.prefix, b.forename, b.surname, b.telephone, b.date, " +
+                    "b.time, b.occupants, GROUP_CONCAT(bt.tableID ORDER BY bt.tableID SEPARATOR ', ') " +
+                    "AS tables FROM Bookings b INNER JOIN BookedTables bt ON b.bookingID = bt.bookingID " +
+                    "GROUP BY b.bookingID";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                int bookingID = rs.getInt("bookingID");
+                String prefix = rs.getString("prefix");
+                String forename = rs.getString("forename");
+                String surname = rs.getString("surname");
+                String telephone = rs.getString("telephone");
+                String date = rs.getString("date");
+                String time = rs.getString("time");
+                int occupants = rs.getInt("occupants");
+                String tableNumbers = rs.getString("tables");
+
+                // Add a row to the table model
+                model.addRow(new Object[]{bookingID, prefix, forename, surname, telephone, date, time, occupants, tableNumbers});
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void setExitButton() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -139,7 +202,14 @@ public class ViewReservation {
         exit.addActionListener(e -> {
             if (e.getSource() == exit) {
                 frame.dispose();
-                Home home = new Home();
+                Home home = null;
+                try {
+                    home = new Home();
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
                 try {
                     home.start();
                     System.out.println("[event]: exit button clicked");
@@ -154,6 +224,35 @@ public class ViewReservation {
         buttonPanel.add(exit);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         panel.add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void deleteReservation(int bookingID) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = JDBC.getConn();
+            conn.setAutoCommit(false); // Start a transaction
+
+            String deleteBookedTablesSql = "DELETE FROM BookedTables WHERE bookingID IN " +
+                    "(SELECT bookingID FROM Bookings WHERE bookingID = ?)";
+            try (PreparedStatement deleteBookedTablesStatement = conn.prepareStatement(deleteBookedTablesSql)) {
+                deleteBookedTablesStatement.setInt(1, bookingID);
+                deleteBookedTablesStatement.executeUpdate();
+            }
+
+            String deleteBookingsSql = "DELETE FROM Bookings WHERE bookingID = ?";
+            try (PreparedStatement deleteBookingsStatement = conn.prepareStatement(deleteBookingsSql)) {
+                deleteBookingsStatement.setInt(1, bookingID);
+                deleteBookingsStatement.executeUpdate();
+            }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+
+        } finally {
+            JDBC.closeConn(conn);
+        }
     }
 
 }
