@@ -1,4 +1,4 @@
-package FOH;
+package FOH.Courses;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -64,12 +64,6 @@ public class Beverages {
         exit.setPreferredSize(new Dimension(100, 50));
         exit.addActionListener(e -> {
             frame.dispose();
-            try {
-                ServeTable serveTable = new ServeTable();
-                serveTable.start();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
         });
 
         buttonPanel.add(exit);

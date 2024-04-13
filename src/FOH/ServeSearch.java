@@ -96,6 +96,7 @@ public class ServeSearch {
         submit.setPreferredSize(new Dimension(125, 40));
         submit.addActionListener(e -> {
             if (e.getSource() == submit) {
+                frame.dispose();
                 System.out.println("[event]: submit button clicked");
                 String forenameText = forename.getText();
                 String telephoneText = telephone.getText();
@@ -150,30 +151,22 @@ public class ServeSearch {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                int bookingID = resultSet.getInt("bookingID");
-                //System.out.println("[search] Booking found with ID: " + bookingID);
 
-                int ID = resultSet.getInt("bookingID");
+                int bookingID = resultSet.getInt("bookingID");
                 String prefix = resultSet.getString("prefix");
                 String forename = resultSet.getString("forename");
                 String surname = resultSet.getString("surname");
-                String telephone = resultSet.getString("telephone");
-                Date date = resultSet.getDate("date");
-                String time = resultSet.getString("time");
                 int occupants = resultSet.getInt("occupants");
-                boolean isWalkIn = resultSet.getBoolean("isWalkIn");
 
-                // Print out the data
-                System.out.println("Booking found:");
-                System.out.println("Booking ID: " + ID);
-                System.out.println("Prefix: " + prefix);
-                System.out.println("Forename: " + forename);
-                System.out.println("Surname: " + surname);
-                System.out.println("Telephone: " + telephone);
-                System.out.println("Date: " + date);
-                System.out.println("Time: " + time);
-                System.out.println("Occupants: " + occupants);
-                System.out.println("Is Walk-in: " + isWalkIn);
+                String tables = searchBookedTables(conn, bookingID);
+
+                try {
+                    ServeTable serve = new ServeTable(bookingID, prefix, forename, surname, occupants, tables);
+                    serve.start();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
 
             } else {
                 System.out.println("No booking found with the given details.");
@@ -182,5 +175,25 @@ public class ServeSearch {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String searchBookedTables(Connection conn, int ID) throws SQLException {
+
+        StringBuilder tables = new StringBuilder();
+        String sql = "SELECT tableID FROM BookedTables WHERE bookingID = ?";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, ID);
+        ResultSet resultSet = statement.executeQuery();
+
+        while (resultSet.next()) {
+            int tableID = resultSet.getInt("tableID");
+            tables.append(tableID).append(", ");
+        }
+
+        if (!tables.isEmpty()) {
+            tables.setLength(tables.length() - 2);
+        }
+
+        return tables.toString();
     }
 }

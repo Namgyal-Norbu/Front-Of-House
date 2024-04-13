@@ -65,13 +65,7 @@ public class ThirdCourse {
         JButton exit = new JButton("Exit");
         exit.setPreferredSize(new Dimension(100, 50));
         exit.addActionListener(e -> {
-            frame.dispose();
-            try {
-                ServeTable serveTable = new ServeTable();
-                serveTable.start();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+
         });
         JButton add = new JButton("Add");
         add.setPreferredSize(new Dimension(100, 50));
