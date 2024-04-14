@@ -5,9 +5,22 @@ import javax.swing.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
+
+/**
+ * The Home class serves as the main entry point for the FOH Service Software,
+ * providing a GUI home screen with options to navigate to different functionalities such as
+ * creating reservations, viewing reservations, and serving tables.
+ */
+
 public class Home {
   private static JFrame frame;
   private static JPanel panel;
+
+  /**
+     * Constructs a new Home instance. InitialiSes database connection and sets up the main frame and panel.
+     * 
+     * @throws SQLException if an error occurs during database connection initialization.
+     */
 
   public Home() throws SQLException {
     JDBC.startConn();
@@ -33,6 +46,11 @@ public class Home {
     frame.setVisible(true);
 
   }
+
+  /**
+     * Loads and displays the logo on the home interface.
+     * The logo is positioned within the panel based on specified bounds.
+     */
 
   public void loadLogo() {
     ImageIcon icon = new ImageIcon("res/images/logo.png");
