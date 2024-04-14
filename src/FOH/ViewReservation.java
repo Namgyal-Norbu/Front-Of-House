@@ -186,7 +186,16 @@ public class ViewReservation {
 
         checkout.addActionListener(e -> {
             if (e.getSource() == checkout) {
-                System.out.println("[event]: checkout button clicked");
+                Checkout check;
+                try {
+                    frame.dispose();
+                    System.out.println("[event]: checkout button clicked");
+                    check = new Checkout();
+                    check.start();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 

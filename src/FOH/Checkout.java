@@ -1,26 +1,22 @@
-package FOH.Courses;
-
-import FOH.Home;
-import FOH.ServeTable;
+package FOH;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class FirstCourse {
 
-    private JFrame frame;
-    private JPanel panel;
+public class Checkout {
+    private final JFrame frame;
+    private final JPanel panel;
     private final JLabel title;
 
 
-    public FirstCourse() {
+    public Checkout() {
         frame = new JFrame();
         panel = new JPanel();
-        title = new JLabel("Select Menu Items");
+        title = new JLabel("Checkout");
     }
 
     public void start() throws IOException {
@@ -29,17 +25,19 @@ public class FirstCourse {
         panel.setLayout(new BorderLayout());
 
         setTitle();
+        setPage();
         loadButtons();
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("FOH Service Software");
-        frame.setSize(450, 450);
+        frame.setSize(950, 650);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void setTitle(){
+
+    public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -47,16 +45,20 @@ public class FirstCourse {
         panel.add(title, BorderLayout.NORTH);
     }
 
-    private void loadButtons() {
+    public void setPage() {
+
+    }
+
+    public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(43, 51, 54));
 
-        JButton submit = new JButton("submit");
-        submit.setPreferredSize(new Dimension(125, 40));
-        submit.addActionListener(e -> {
-            if (e.getSource() == submit) {
+        JButton pay = new JButton("pay");
+        pay.setPreferredSize(new Dimension(125, 40));
+        pay.addActionListener(e -> {
+            if (e.getSource() == pay) {
                 frame.dispose();
-                System.out.println("[event]: submit button clicked");
+                System.out.println("[event]: pay button clicked");
             }
 
         });
@@ -66,13 +68,23 @@ public class FirstCourse {
         cancel.addActionListener(e -> {
             if (e.getSource() == cancel) {
                 frame.dispose();
+                ViewReservation view;
+                try {
+                    frame.dispose();
+                    System.out.println("[event]: cancel button clicked");
+                    view = new ViewReservation();
+                    view.start();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
 
         buttonPanel.add(cancel);
-        buttonPanel.add(submit);
+        buttonPanel.add(pay);
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
 }
