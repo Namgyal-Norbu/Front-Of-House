@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="FOHtoManagement">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/FOHtoManagement.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

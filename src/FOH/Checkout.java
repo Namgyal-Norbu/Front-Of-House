@@ -1,6 +1,9 @@
 package FOH;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,11 +15,15 @@ public class Checkout {
     private final JPanel panel;
     private final JLabel title;
 
+    private final JTable summary;
+
 
     public Checkout() {
         frame = new JFrame();
         panel = new JPanel();
         title = new JLabel("Checkout");
+
+        summary = new JTable();
     }
 
     public void start() throws IOException {
@@ -25,8 +32,8 @@ public class Checkout {
         panel.setLayout(new BorderLayout());
 
         setTitle();
-        setPage();
         loadButtons();
+        setPage();
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,8 +53,36 @@ public class Checkout {
     }
 
     public void setPage() {
+        JPanel summaryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
+        summaryPanel.setBackground(new Color(43, 51, 54));
 
+        setSummaryTable(summaryPanel);
+        panel.add(summaryPanel, BorderLayout.WEST);
     }
+
+    public void setSummaryTable(JPanel p) {
+        JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        tablePanel.setBackground(new Color(43, 51, 54));
+
+        JScrollPane scrollPane = new JScrollPane(summary);
+        scrollPane.setPreferredSize(new Dimension(400, 450));
+
+        String[] columns = {
+                "Item",
+                "Price"
+        };
+
+        Object[][] data = {};
+
+        DefaultTableModel model = new DefaultTableModel(data, columns);
+        summary.setModel(model);
+        summary.setShowGrid(true);
+        summary.setGridColor(Color.LIGHT_GRAY);
+
+        tablePanel.add(scrollPane);
+        p.add(tablePanel) ;
+    }
+
 
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
