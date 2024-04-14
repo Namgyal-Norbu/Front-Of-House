@@ -9,6 +9,12 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
+/**
+ * The EditReservation class manages the user interface for editing existing reservations
+ * within the FOH Service Software. It allows for updating details of a previously created reservation,
+ * including customer information and reservation specifics like date, time, and table selection.
+ */
+
 public class EditReservation {
     private final JFrame frame;
     private final JPanel panel;
@@ -24,6 +30,21 @@ public class EditReservation {
     private final JComboBox<String> time;
     private final JTextField occupants;
     private final JButton tableNo;
+
+     /**
+     * Constructs a new EditReservation instance. Initialises all UI components with data from the existing reservation.
+     * 
+     * @param selectedBookingID The ID of the booking to edit.
+     * @param isWalkInSelected Whether the reservation was marked as walk-in.
+     * @param selectedPrefix The prefix of the customer.
+     * @param selectedForename The forename of the customer.
+     * @param selectedSurname The surname of the customer.
+     * @param selectedTelephone The phone number of the customer.
+     * @param selectedDateModel The date model representing the reservation date.
+     * @param selectedTime The reservation time.
+     * @param selectedOccupants The number of occupants for the reservation.
+     * @param selectedTableNo The table numbers associated with the reservation.
+     */
 
     public EditReservation(int selectedBookingID, boolean isWalkInSelected, String selectedPrefix, String selectedForename,
                            String selectedSurname, String selectedTelephone, UtilDateModel selectedDateModel,
@@ -63,6 +84,13 @@ public class EditReservation {
         tableNo = new JButton(selectedTableNo);
     }
 
+    /**
+     * Initialises and displays the reservation editing interface.
+     * Configures the main frame, adds components to the panel, and makes the frame visible.
+     * 
+     * @throws IOException if an I/O error occurs during the setup.
+     */
+
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
         panel.setBorder(BorderFactory.createEmptyBorder());
@@ -79,6 +107,10 @@ public class EditReservation {
         frame.setResizable(false);
         frame.setVisible(true);
     }
+
+    /**
+     * Configures the title properties and adds it to the top region of the main panel.
+     */
 
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
@@ -262,6 +294,15 @@ public class EditReservation {
         buttonPanel.add(submit);
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
+
+    /**
+     * Updates the booking in the database using JDBC. This includes modifying customer details,
+     * reservation times, and associated table numbers.
+     * 
+     * @param conn Connection object to the database.
+     * @throws SQLException if there is a problem executing the SQL query.
+     * @throws IOException if there is an I/O problem during the operation.
+     */
 
     public void updateBooking(Connection conn) throws SQLException, IOException {
         try {

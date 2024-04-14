@@ -9,6 +9,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 
+/**
+ * The Chekout class manages the checkout interface for the FOH Service Software.
+ * This class provides a GUI for user interaction during the checkout process, including
+ * options to pay or cancel. It is responsible for setting up the frame, panels, and buttons
+ * necessary for the checkout interface.
+ */
+
 
 public class Checkout {
     private final JFrame frame;
@@ -18,6 +25,10 @@ public class Checkout {
     private final JTable summary;
 
 
+   /**
+   * Constructs a new Checkout instance. Initialises the main frame, panel, and title label.
+   */
+    
     public Checkout() {
         frame = new JFrame();
         panel = new JPanel();
@@ -25,6 +36,14 @@ public class Checkout {
 
         summary = new JTable();
     }
+
+     /**
+     * Initializes and displays the checkout interface.
+     * This method sets up the background, layout, and buttons for the panel, and
+     * makes the frame visible to the user.
+     * 
+     * @throws IOException if an I/O error occurs when setting up the page.
+     */
 
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
@@ -44,6 +63,11 @@ public class Checkout {
         frame.setVisible(true);
     }
 
+     /**
+     * Sets up the title for the checkout interface.
+     * Configures the font, color, alignment, and border of the title label.
+     */
+
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
@@ -51,6 +75,10 @@ public class Checkout {
         title.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         panel.add(title, BorderLayout.NORTH);
     }
+
+     /**
+     * Placeholder method for setting up the main content of the page.
+     */
 
     public void setPage() {
         JPanel summaryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
@@ -60,6 +88,7 @@ public class Checkout {
         panel.add(summaryPanel, BorderLayout.WEST);
     }
 
+<<<<<<< HEAD
     public void setSummaryTable(JPanel p) {
         JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         tablePanel.setBackground(new Color(43, 51, 54));
@@ -83,6 +112,13 @@ public class Checkout {
         p.add(tablePanel) ;
     }
 
+=======
+    /**
+     * Loads and configures the buttons for the checkout interface.
+     * This method adds "pay" and "cancel" buttons to the interface, with actions defined
+     * for each button's functionality.
+     */
+>>>>>>> 577c59d1a6dbe5ffeb0fa64338695a01619c416b
 
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
