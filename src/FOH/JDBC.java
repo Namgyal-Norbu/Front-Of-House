@@ -4,9 +4,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * The JDBC class manages the database connections for the FOH Service Software.
+ * It provides methods to start, get, and close connections to the database.
+ */ 
+
 public class JDBC {
 
     private static Connection conn = null;
+
+    /**
+     * Initialises the database connection using predefined credentials.
+     * Attempts to establish a connection to the database and sets the conn static variable.
+     * 
+     * @throws SQLException if there is a problem establishing the database connection.
+     */
 
     public static void startConn() throws SQLException {
         try {
@@ -22,9 +34,24 @@ public class JDBC {
         }
     }
 
+    /**
+     * Returns the current database connection.
+     * If no connection exists, this method will return null.
+     * 
+     * @return The current database connection, or null if no connection is established.
+     */
+
     public static Connection getConn() {
         return conn;
     }
+
+    /**
+     * Closes the specified database connection.
+     * This method ensures the connection is closed to avoid resource leaks.
+     * 
+     * @param conn The database connection to close.
+     * @throws SQLException if there is an error closing the connection.
+     */
 
     public static void closeConn(Connection conn) throws SQLException {
         try {
