@@ -278,6 +278,7 @@ public class ViewReservation {
         buttonPanel.setBackground(new Color(43, 51, 54));
 
         JButton exit = new JButton("Exit");
+        exit.setPreferredSize(new Dimension(125, 40));
 
         exit.addActionListener(e -> {
             if (e.getSource() == exit) {
