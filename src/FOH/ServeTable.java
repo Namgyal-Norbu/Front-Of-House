@@ -5,10 +5,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -327,11 +327,17 @@ public class ServeTable extends ServeSearch{
             Connection conn = JDBC.getConn();
 
             // Insert into Orders table
-            String insertOrderSQL = "INSERT INTO Orders (bookingID, tableNos, isComplete) VALUES (?, ?, ?)";
+            String insertOrderSQL = "INSERT INTO Orders (bookingID, tableNo, orderTime, isComplete) VALUES (?, ?, ?, ?)";
             PreparedStatement orderStatement = conn.prepareStatement(insertOrderSQL, PreparedStatement.RETURN_GENERATED_KEYS);
             orderStatement.setInt(1, bookingID);
             orderStatement.setString(2, tables);
-            orderStatement.setBoolean(3, false); // Assuming isComplete is initially set to false
+
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            currentDateTime = currentDateTime.withSecond(0).withNano(0);
+            Timestamp timestamp = Timestamp.valueOf(currentDateTime);
+            orderStatement.setTimestamp(3, timestamp);
+
+            orderStatement.setBoolean(4, false); // Assuming isComplete is initially set to false
             orderStatement.executeUpdate();
 
             int orderID;

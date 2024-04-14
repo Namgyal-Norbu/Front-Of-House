@@ -2,15 +2,11 @@ package FOH;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
 
 /**
- * The Chekout class manages the checkout interface for the FOH Service Software.
+ * The Checkout class manages the checkout interface for the FOH Service Software.
  * This class provides a GUI for user interaction during the checkout process, including
  * options to pay or cancel. It is responsible for setting up the frame, panels, and buttons
  * necessary for the checkout interface.
@@ -88,7 +84,7 @@ public class Checkout {
         panel.add(summaryPanel, BorderLayout.WEST);
     }
 
-<<<<<<< HEAD
+
     public void setSummaryTable(JPanel p) {
         JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         tablePanel.setBackground(new Color(43, 51, 54));
@@ -112,13 +108,6 @@ public class Checkout {
         p.add(tablePanel) ;
     }
 
-=======
-    /**
-     * Loads and configures the buttons for the checkout interface.
-     * This method adds "pay" and "cancel" buttons to the interface, with actions defined
-     * for each button's functionality.
-     */
->>>>>>> 577c59d1a6dbe5ffeb0fa64338695a01619c416b
 
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
