@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * The {@code Checkout} class manages the checkout interface for the FOH Service Software.
+ * The Chekout class manages the checkout interface for the FOH Service Software.
  * This class provides a GUI for user interaction during the checkout process, including
  * options to pay or cancel. It is responsible for setting up the frame, panels, and buttons
  * necessary for the checkout interface.
