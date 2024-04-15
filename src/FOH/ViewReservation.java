@@ -119,8 +119,11 @@ public class ViewReservation {
         buttonPanel.setBackground(new Color(43, 51, 54));
 
         JButton edit = new JButton("Edit Reservation");
+        edit.setPreferredSize(new Dimension(150, 35));
         JButton delete = new JButton("Delete Reservation");
+        delete.setPreferredSize(new Dimension(150, 35));
         JButton checkout = new JButton("Checkout");
+        checkout.setPreferredSize(new Dimension(150, 35));
 
         edit.addActionListener(e -> {
             if (e.getSource() == edit) {
@@ -186,15 +189,22 @@ public class ViewReservation {
 
         checkout.addActionListener(e -> {
             if (e.getSource() == checkout) {
-                Checkout check;
-                try {
-                    frame.dispose();
-                    System.out.println("[event]: checkout button clicked");
-                    check = new Checkout();
-                    check.start();
+                int selectedRow = reservations.getSelectedRow();
+                if (selectedRow != -1) {
+                    int bookingID = (int) reservations.getValueAt(selectedRow, 0);
+                    Checkout check;
+                    try {
+                        frame.dispose();
+                        System.out.println("[event]: checkout button clicked");
+                        check = new Checkout(bookingID);
+                        check.start();
 
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Please select a reservation to checkout.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -231,6 +241,7 @@ public class ViewReservation {
         reservations.setModel(model);
         reservations.setShowGrid(true);
         reservations.setGridColor(Color.LIGHT_GRAY);
+        reservations.setRowHeight(25);
 
         int[] columnWidths = {25, 50, 50, 80, 80, 100, 100, 70, 70, 100};
         for (int i = 0; i < columns.length; i++) {

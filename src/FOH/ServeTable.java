@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class ServeTable extends ServeSearch{
+public class ServeTable extends ServeSearch {
 
     private static JFrame frame;
     private static JPanel panel;
@@ -65,7 +65,6 @@ public class ServeTable extends ServeSearch{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setText();
-
 
 
         loadButtons();
@@ -157,6 +156,7 @@ public class ServeTable extends ServeSearch{
 
                 submitOrder();
                 try {
+                    frame.dispose();
                     Home home = new Home();
                     home.start();
 
@@ -442,13 +442,14 @@ public class ServeTable extends ServeSearch{
             try (ResultSet generatedKeys = orderStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     orderID = generatedKeys.getInt(1);
+
                 } else {
                     throw new SQLException("Creating order failed, no ID obtained.");
                 }
             }
 
             // Insert into OrderedDishes table
-            String insertOrderedDishesSQL = "INSERT INTO OrderedDishes (orderID, dishID, dishName, allergens, quantity) VALUES (?, ?, ?, ?, ?)";
+            String insertOrderedDishesSQL = "INSERT INTO OrderedDishes (orderID, dishID, dishName, allergens, quantity, price) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement orderedDishesStatement = conn.prepareStatement(insertOrderedDishesSQL);
             for (Map.Entry<String, String[]> entry : orderedDishes.entrySet()) {
                 String key = entry.getKey();
@@ -461,12 +462,14 @@ public class ServeTable extends ServeSearch{
                 String dishName = dishData[0];
                 String allergies = dishData[1];
                 int quantity = Integer.parseInt(dishData[2]);
+                double price = getDishPrice(dishID) * quantity;
 
                 orderedDishesStatement.setInt(1, orderID);
                 orderedDishesStatement.setInt(2, dishID);
                 orderedDishesStatement.setString(3, dishName);
                 orderedDishesStatement.setString(4, allergies);
                 orderedDishesStatement.setInt(5, quantity);
+                orderedDishesStatement.setDouble(6, price);
                 orderedDishesStatement.executeUpdate();
             }
 
@@ -475,5 +478,16 @@ public class ServeTable extends ServeSearch{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public double getDishPrice(int dishID) {
+        for (Course course : menu.getCourses()) {
+            for (Dish dish : course.getDishes()) {
+                if (dish.getDishID() == dishID) {
+                    return dish.getPrice();
+                }
+            }
+        }
+        return 0.0; // Return 0.0 if dishID is not found (you may want to handle this differently)
     }
 }
