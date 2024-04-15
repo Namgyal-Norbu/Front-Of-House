@@ -15,6 +15,11 @@ interface TableSelectionListener {
     void onTableSelected(List<Integer> selectedTables);
 }
 
+/**
+ * The SelectTable class provides a user interface for selecting tables for a reservation.
+ * It includes functionality to check table availability based on the date, time, and walk-in status.
+ */
+
 public class SelectTable {
 
     private static JFrame frame;
@@ -23,6 +28,10 @@ public class SelectTable {
     private static List<Integer> selectedTables;
     private static TableSelectionListener selectionListener;
 
+    /**
+     * Constructs a new SelectTable instance. Initialises the GUI components.
+     */
+
     public SelectTable() {
         frame = new JFrame();
         panel = new JPanel();
@@ -30,6 +39,17 @@ public class SelectTable {
         tablesLabel.setForeground(Color.WHITE);
         selectedTables = new ArrayList<>();
     }
+
+    /**
+     * Initialises and displays the table selection interface.
+     * Sets up the panel with buttons representing tables and a submit button to finalize selection.
+     * 
+     * @param listener The listener that handles the selected tables.
+     * @param date The date of the reservation.
+     * @param time The time of the reservation.
+     * @param walkIn Indicates if the reservation is for a walk-in customer.
+     * @throws SQLException If a database access error occurs.
+     */
 
     public void start(TableSelectionListener listener, Date date, String time, boolean walkIn) throws SQLException {
         selectionListener = listener;
@@ -50,6 +70,11 @@ public class SelectTable {
         frame.setVisible(true);
     }
 
+    /**
+     * Configures and adds a submit button to the panel. The button triggers the selection listener
+     * and closes the window upon clicking.
+     */
+
     public void setButton() {
         JPanel submitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         submitPanel.setBackground(new Color(43, 51, 54));
@@ -62,6 +87,15 @@ public class SelectTable {
         submitPanel.add(submitButton);
         panel.add(submitPanel, BorderLayout.SOUTH);
     }
+
+    /**
+     * Creates and arranges buttons for table selection based on availability.
+     * Enables or disables buttons based on the table's availability for the specified date and time.
+     * 
+     * @param selectedDate The date for which the tables are being selected.
+     * @param selectedTime The time for which the tables are being selected.
+     * @param walkIn Whether the reservation is for a walk-in customer.
+     */
 
     public void tableChoices(Date selectedDate, String selectedTime, boolean walkIn) {
         JPanel buttonsPanel = new JPanel(new GridLayout(0, 4, 35, 5));
@@ -106,6 +140,9 @@ public class SelectTable {
         panel.add(buttonsPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Updates the label that displays the numbers of currently selected tables.
+     */
 
     private void updateSelectedTablesLabel() {
         StringBuilder selectedTablesText = new StringBuilder("Selected Tables: ");
@@ -117,6 +154,15 @@ public class SelectTable {
         }
         tablesLabel.setText(selectedTablesText.toString());
     }
+
+    /**
+     * Checks if a table is available at the specified date and time.
+     * 
+     * @param tableNumber The table number to check for availability.
+     * @param selectedDate The selected date.
+     * @param selectedTime The selected time.
+     * @return true if the table is available, false otherwise.
+     */            
 
     public boolean isTableAvailable(int tableNumber, Date selectedDate, String selectedTime) {
 
