@@ -1,14 +1,15 @@
 package FOH;
 
+import ManagementToFOH.*;
+import ManagementToFOH.Menu;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -26,8 +27,11 @@ public class ServeTable extends ServeSearch{
     private final int occupants;
     private final String tables;
 
+    private final Menu menu;
+
     private final JTable order;
     private final JTextField allergies;
+    private final JTextArea description;
     private final JTable courseOne;
     private final JTable courseTwo;
     private final JTable courseThree;
@@ -44,8 +48,12 @@ public class ServeTable extends ServeSearch{
         this.occupants = occupants;
         this.tables = tables;
 
+        ManagementToFOH mgmtData = new ManagementToFOHimpl();
+        menu = mgmtData.getMenu(LocalDate.of(2024, 4, 15));
+
         order = new JTable();
         allergies = new JTextField(20);
+        description = new JTextArea();
         courseOne = new JTable();
         courseTwo = new JTable();
         courseThree = new JTable();
@@ -57,6 +65,9 @@ public class ServeTable extends ServeSearch{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setText();
+
+
+
         loadButtons();
 
         frame.setTitle("FOH Service Software");
@@ -95,27 +106,30 @@ public class ServeTable extends ServeSearch{
         buttonPanel.setBackground(new Color(43, 51, 54));
 
         JButton first = new JButton("1st Course");
+        first.setPreferredSize(new Dimension(125, 40));
         JButton second = new JButton("2nd Course");
+        second.setPreferredSize(new Dimension(125, 40));
         JButton third = new JButton("3rd Course");
+        third.setPreferredSize(new Dimension(125, 40));
 
         first.addActionListener(e -> {
             if (e.getSource() == first) {
                 System.out.println("[event]: 1st course button clicked");
-                openCourseTab("Course 1", courseOne);
+                openCourseTab(1, courseOne);
             }
         });
 
         second.addActionListener(e -> {
             if (e.getSource() == second) {
                 System.out.println("[event]: 2nd course button clicked");
-                openCourseTab("Course 2", courseTwo);
+                openCourseTab(2, courseTwo);
             }
         });
 
         third.addActionListener(e -> {
             if (e.getSource() == third) {
                 System.out.println("[event]: 3rd course button clicked");
-                openCourseTab("Course 3", courseThree);
+                openCourseTab(3, courseThree);
             }
         });
 
@@ -135,7 +149,20 @@ public class ServeTable extends ServeSearch{
         submit.addActionListener(e -> {
             if (e.getSource() == submit) {
                 System.out.println("[event]: submit button clicked");
+
+                if (order.getRowCount() == 0) {
+                    JOptionPane.showMessageDialog(frame, "No entries in the orders table.", "Empty Orders", JOptionPane.WARNING_MESSAGE);
+                    return; // Exit the action listener if the table is empty
+                }
+
                 submitOrder();
+                try {
+                    Home home = new Home();
+                    home.start();
+
+                } catch (SQLException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -144,6 +171,12 @@ public class ServeTable extends ServeSearch{
         remove.addActionListener(e -> {
             if (e.getSource() == remove) {
                 System.out.println("[event]: remove button clicked");
+                int selectedRow = order.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(frame, "No row selected to remove.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 removeFromOrder();
             }
         });
@@ -183,8 +216,8 @@ public class ServeTable extends ServeSearch{
         String[] columns = {
                 "ID",
                 "Item",
-                "Allergens",
-                "Price",
+                "Removed Ingredient",
+                "Price"
         };
 
         Object[][] data = {};
@@ -193,13 +226,14 @@ public class ServeTable extends ServeSearch{
         order.setModel(model);
         order.setShowGrid(true);
         order.setGridColor(Color.LIGHT_GRAY);
+        order.setRowHeight(30);
 
         tablePanel.add(scrollPane);
         p.add(tablePanel);
     }
 
-    private void openCourseTab(String course, JTable courseTable) {
-        JFrame courseFrame = new JFrame(course);
+    private void openCourseTab(int course, JTable courseTable) {
+        JFrame courseFrame = new JFrame("Course " + course);
         JPanel coursePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         coursePanel.setBackground(new Color(43, 51, 54));
 
@@ -207,23 +241,48 @@ public class ServeTable extends ServeSearch{
         tablePanel.setBackground(new Color(43, 51, 54));
 
         JScrollPane scrollPane = new JScrollPane(courseTable);
-        scrollPane.setPreferredSize(new Dimension(600, 350));
+        scrollPane.setPreferredSize(new Dimension(600, 150));
 
         String[] columns = {
                 "ID",
                 "Item",
+                "Allergens",
                 "Price"
         };
-        Object[][] data = {
-                {"1", "Burger", "£7.49"},
-                {"2", "Steak", "£17.99"},
-                {"3", "Risotto", "£11.99"}
-        };
+        Object[][] data = {};
 
         DefaultTableModel model = new DefaultTableModel(data, columns);
         courseTable.setModel(model);
         courseTable.setShowGrid(true);
         courseTable.setGridColor(Color.LIGHT_GRAY);
+        courseTable.setRowHeight(30);
+
+        int[] columnWidths = {5, 50, 50, 15};
+        for (int i = 0; i < columns.length; i++) {
+            TableColumn column = courseTable.getColumnModel().getColumn(i);
+            column.setPreferredWidth(columnWidths[i]);
+        }
+
+        for (Course menuCourse : menu.getCourses()) {
+            if (menuCourse.getCourseID() == course) {
+                for (Dish dish : menuCourse.getDishes()) {
+                    model.addRow(new Object[]{dish.getDishID(), dish.getName(), dish.getAllergens(), "£" + dish.getPrice()});
+                }
+            }
+        }
+
+        JPanel descPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        descPanel.setBackground(new Color(43, 51, 54));
+
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setEditable(false);
+        description.setPreferredSize(new Dimension(500, 70));
+        JLabel descTitle = new JLabel("Description:");
+        descTitle.setForeground(Color.WHITE);
+        descPanel.add(descTitle);
+        setDescription(course, courseTable);
+        descPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
         TableColumn priceColumn = courseTable.getColumnModel().getColumn(1);
         priceColumn.setPreferredWidth(20);
@@ -232,7 +291,7 @@ public class ServeTable extends ServeSearch{
         JPanel allergyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         allergyPanel.setBackground(new Color(43, 51, 54));
 
-        JLabel text = new JLabel("Allergens:");
+        JLabel text = new JLabel("Allergens To Add:");
         text.setForeground(Color.WHITE);
         allergyPanel.add(text);
         allergyPanel.add(allergies);
@@ -256,12 +315,14 @@ public class ServeTable extends ServeSearch{
         tablePanel.add(scrollPane);
         buttonPanel.add(add, BorderLayout.SOUTH);
         buttonPanel.add(allergyPanel, BorderLayout.SOUTH);
+        descPanel.add(description);
 
         coursePanel.add(tablePanel);
         coursePanel.add(buttonPanel, BorderLayout.SOUTH);
+        coursePanel.add(descPanel, BorderLayout.SOUTH);
 
         courseFrame.add(coursePanel);
-        courseFrame.setSize(700, 500);
+        courseFrame.setSize(700, 450);
         courseFrame.setLocationRelativeTo(null);
         courseFrame.setVisible(true);
     }
@@ -273,15 +334,52 @@ public class ServeTable extends ServeSearch{
         int[] selectedRows = courseTable.getSelectedRows();
 
         for (int row : selectedRows) {
-            Object[] rowData = new Object[courseModel.getColumnCount() + 1];
-            for (int col = 0; col < courseModel.getColumnCount() - 1; col++) {
-                rowData[col] = courseModel.getValueAt(row, col);
-            }
-            rowData[courseModel.getColumnCount() - 1] = allergiesField.getText();
-            rowData[courseModel.getColumnCount()] = courseModel.getValueAt(row, courseModel.getColumnCount() - 1);
+            Object[] rowData = new Object[4]; // Fixed size for the order table
+
+            // Add ID and Name from the course table
+            rowData[0] = courseModel.getValueAt(row, 0); // Assuming ID is in the first column
+            rowData[1] = courseModel.getValueAt(row, 1); // Assuming Name is in the second column
+
+            // Add the text from the allergies text field to the "Removed Ingredient" column
+            rowData[2] = allergiesField.getText();
+
+            // Add the dish price to the order data
+            rowData[3] = courseModel.getValueAt(row, 3); // Assuming price is in the last column
+
             orderModel.addRow(rowData);
         }
     }
+
+
+    public void setDescription(int course, JTable courseTable) {
+
+        courseTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = courseTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int dishID = (int) courseTable.getValueAt(selectedRow, 0);
+                    Dish selectedDish = null;
+                    for (Course menuCourse : menu.getCourses()) {
+                        if (menuCourse.getCourseID() == course) {
+                            for (Dish dish : menuCourse.getDishes()) {
+                                if (dish.getDishID() == dishID) {
+                                    selectedDish = dish;
+                                    break;
+                                }
+                            }
+                        }
+                        if (selectedDish != null) {
+                            break;
+                        }
+                    }
+                    if (selectedDish != null) {
+                        description.setText(selectedDish.getDescription());
+                    }
+                }
+            }
+        });
+    }
+
 
     private void removeFromOrder() {
         DefaultTableModel orderModel = (DefaultTableModel) order.getModel();
@@ -297,7 +395,7 @@ public class ServeTable extends ServeSearch{
 
         // Iterate through each row in the order table
         for (int i = 0; i < orderModel.getRowCount(); i++) {
-            int dishID = Integer.parseInt((String) orderModel.getValueAt(i, 0)); // Assuming the dish ID is in the first column
+            int dishID = (int) orderModel.getValueAt(i, 0); // Assuming the dish ID is in the first column
             String dishName = (String) orderModel.getValueAt(i, 1); // Assuming the dish name is in the second column
             String allergies = (String) orderModel.getValueAt(i, 2); // Assuming the allergies are in the third column
 
@@ -378,5 +476,4 @@ public class ServeTable extends ServeSearch{
             throw new RuntimeException(e);
         }
     }
-
 }

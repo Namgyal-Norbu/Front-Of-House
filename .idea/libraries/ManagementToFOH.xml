@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="FOHtoManagement">
+  <library name="ManagementToFOH">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/FOHtoManagement.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ManagementToFOH.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
