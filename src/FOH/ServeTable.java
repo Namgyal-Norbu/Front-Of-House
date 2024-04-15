@@ -65,8 +65,6 @@ public class ServeTable extends ServeSearch {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setText();
-
-
         loadButtons();
 
         frame.setTitle("FOH Service Software");
@@ -257,7 +255,7 @@ public class ServeTable extends ServeSearch {
         courseTable.setGridColor(Color.LIGHT_GRAY);
         courseTable.setRowHeight(30);
 
-        int[] columnWidths = {5, 50, 50, 15};
+        int[] columnWidths = {5, 70, 50, 50, 15};
         for (int i = 0; i < columns.length; i++) {
             TableColumn column = courseTable.getColumnModel().getColumn(i);
             column.setPreferredWidth(columnWidths[i]);
@@ -266,7 +264,9 @@ public class ServeTable extends ServeSearch {
         for (Course menuCourse : menu.getCourses()) {
             if (menuCourse.getCourseID() == course) {
                 for (Dish dish : menuCourse.getDishes()) {
+                    Wine wine = menu.getWinePairings().get(dish);
                     model.addRow(new Object[]{dish.getDishID(), dish.getName(), dish.getAllergens(), "£" + dish.getPrice()});
+                    model.addRow(new Object[]{wine.getWineID(), wine.getName(), "", "£" + wine.getPrice()});
                 }
             }
         }

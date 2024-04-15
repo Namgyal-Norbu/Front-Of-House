@@ -208,6 +208,14 @@ public class Checkout {
                 frame.dispose();
                 System.out.println("[event]: pay button clicked");
                 insertSale();
+
+                try {
+                    Home home = new Home();
+                    home.start();
+
+                } catch (SQLException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
 
         });
@@ -320,11 +328,23 @@ public class Checkout {
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted > 0) {
                 ResultSet generatedKeys = statement.getGeneratedKeys();
+                int saleID = -1;
                 if (generatedKeys.next()) {
-                    int saleID = generatedKeys.getInt(1);
+                    saleID = generatedKeys.getInt(1);
                     System.out.println("Sale ID: " + saleID);
                 }
                 System.out.println("Sale data inserted successfully.");
+
+                // Update booking to mark it as finished
+                String updateBookingQuery = "UPDATE Bookings SET isFinished = true WHERE bookingID = ?";
+                PreparedStatement updateStatement = conn.prepareStatement(updateBookingQuery);
+                updateStatement.setInt(1, bookingID);
+                int updatedRows = updateStatement.executeUpdate();
+                if (updatedRows > 0) {
+                    System.out.println("Booking marked as finished.");
+                } else {
+                    System.out.println("Failed to mark booking as finished.");
+                }
             } else {
                 System.out.println("Failed to insert sale data.");
             }
@@ -333,6 +353,7 @@ public class Checkout {
             throw new RuntimeException("Error while inserting sale data: " + e.getMessage());
         }
     }
+
 
 
     private String getDishList() {

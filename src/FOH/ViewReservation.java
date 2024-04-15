@@ -267,7 +267,9 @@ public class ViewReservation {
             String sql = "SELECT b.bookingID, b.prefix, b.forename, b.surname, b.telephone, b.date, " +
                     "b.time, b.occupants, GROUP_CONCAT(bt.tableID ORDER BY bt.tableID SEPARATOR ', ') " +
                     "AS tables, b.isWalkIn FROM Bookings b INNER JOIN BookedTables bt ON b.bookingID = bt.bookingID " +
-                    "GROUP BY b.bookingID";
+                    "WHERE b.isFinished = false " + // Add condition to filter out finished bookings
+                    "GROUP BY b.bookingID " +
+                    "ORDER BY b.date DESC"; // Sort by date in descending order
 
             PreparedStatement statement = conn.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
@@ -292,6 +294,8 @@ public class ViewReservation {
             throw new RuntimeException(e);
         }
     }
+
+
 
     public void setExitButton() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -328,9 +332,8 @@ public class ViewReservation {
     }
 
     private void deleteBooking(int bookingID) throws SQLException {
-        Connection conn = null;
         try {
-            conn = JDBC.getConn();
+            Connection conn = JDBC.getConn();
             conn.setAutoCommit(false); // Start a transaction
 
             String deleteBookedTablesSql = "DELETE FROM BookedTables WHERE bookingID IN " +
@@ -350,9 +353,6 @@ public class ViewReservation {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
-
-        } finally {
-            JDBC.closeConn(conn);
         }
     }
 
