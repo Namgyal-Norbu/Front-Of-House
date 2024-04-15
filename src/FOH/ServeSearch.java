@@ -13,6 +13,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+/**
+ * The ServeSearch class provides a user interface for searching for existing bookings
+ * based on entered booking details. This class facilitates finding and selecting a booking to serve.
+ */
+
 public class ServeSearch {
 
     private static JFrame frame;
@@ -22,6 +27,10 @@ public class ServeSearch {
     private final JTextField forename;
     private final JTextField telephone;
     private final JDatePickerImpl date;
+
+    /**
+     * Constructs a new ServeSearch instance. Initializes GUI components for inputting booking details.
+     */
 
     public ServeSearch() {
         frame = new JFrame();
@@ -34,6 +43,13 @@ public class ServeSearch {
         UtilDateModel model = new UtilDateModel();
         date = new JDatePickerImpl(new JDatePanelImpl(model));
     }
+
+    /**
+     * Initialises and displays the booking search interface.
+     * Sets up the form for entering booking details and submit/cancel buttons.
+     * 
+     * @throws IOException if an I/O error occurs during the setup.
+     */
 
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
@@ -53,6 +69,10 @@ public class ServeSearch {
         frame.setVisible(true);
     }
 
+    /**
+     * Sets the title properties and adds it to the north region of the main panel.
+     */
+
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
@@ -60,6 +80,10 @@ public class ServeSearch {
         title.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         panel.add(title, BorderLayout.NORTH);
     }
+
+    /**
+     * Configures and adds a form with fields for entering booking details to the panel.
+     */
 
     public void setForm() {
         JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 11, 30));
@@ -87,6 +111,10 @@ public class ServeSearch {
         namePanel.add(datePanel);
         panel.add(namePanel);
     }
+
+    /**
+     * Configures and adds buttons for submitting or canceling the search to the panel.
+     */
 
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -136,6 +164,14 @@ public class ServeSearch {
         buttonPanel.add(submit);
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
+
+     /**
+     * Searches for a booking in the database based on the provided details and displays the result.
+     * 
+     * @param forenameText The forename associated with the booking.
+     * @param telephoneText The telephone number associated with the booking.
+     * @param selectedDate The date of the booking.
+     */
 
     public void searchBooking(String forenameText, String telephoneText, Date selectedDate) {
 
