@@ -14,7 +14,6 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
  * within the FOH Service Software. This class provides GUI components for inputting reservation details,
  * selecting a date, and choosing tables.
  */
-
 public class CreateReservation {
     private final JFrame frame;
     private final JPanel panel;
@@ -30,10 +29,10 @@ public class CreateReservation {
     private final JTextField occupants;
     private final JButton tableNo;
 
-     /**
-     * Constructs a new CreateReservation instance. Initialises all UI components used in the reservation form.
+    /**
+     * Constructs a new CreateReservation instance.
+     * Initializes all UI components used in the reservation form.
      */
-
     public CreateReservation() {
         frame = new JFrame();
         panel = new JPanel();
@@ -59,12 +58,11 @@ public class CreateReservation {
     }
 
     /**
-     * Initialises and displays the reservation creation interface.
+     * Initializes and displays the reservation creation interface.
      * Configures the main frame, adds components to the panel, and makes the frame visible.
-     * 
+     *
      * @throws IOException if an I/O error occurs during the setup.
      */
-
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
         panel.setBorder(BorderFactory.createEmptyBorder());
@@ -83,10 +81,9 @@ public class CreateReservation {
         frame.setVisible(true);
     }
 
-     /**
+    /**
      * Configures the title properties and adds it to the north region of the main panel.
      */
-
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
@@ -95,6 +92,14 @@ public class CreateReservation {
         panel.add(title, BorderLayout.NORTH);
     }
 
+    /**
+     * Adds a label and text field to the specified panel with the given layout.
+     *
+     * @param panel The panel to which the label and text field will be added.
+     * @param layout The layout for the panel.
+     * @param label The label text.
+     * @param field The text field component.
+     */
     public void addField(JPanel panel, FlowLayout layout ,String label, JTextField field) {
         JPanel fieldPanel = new JPanel(layout);
         fieldPanel.setBackground(new Color(43, 51, 54));
@@ -107,6 +112,14 @@ public class CreateReservation {
         panel.add(fieldPanel);
     }
 
+    /**
+     * Adds a label and dropdown box to the specified panel with the given layout.
+     *
+     * @param panel The panel to which the label and dropdown box will be added.
+     * @param layout The layout for the panel.
+     * @param label The label text.
+     * @param dropBox The dropdown box component.
+     */
     public void addDropDown(JPanel panel, FlowLayout layout ,String label, JComboBox<String> dropBox) {
         JPanel fieldPanel = new JPanel(layout);
         fieldPanel.setBackground(new Color(43, 51, 54));
@@ -122,7 +135,6 @@ public class CreateReservation {
     /**
      * Adds various input fields and dropdowns to the form panel which is then added to the main panel.
      */
-
     public void setForm() {
         JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
         formPanel.setBackground(new Color(43, 51, 54));
@@ -183,10 +195,9 @@ public class CreateReservation {
         panel.add(formPanel, BorderLayout.CENTER);
     }
 
-     /**
+    /**
      * Loads and sets action listeners for the buttons on the form, adding functionality to submit or cancel the reservation.
      */
-
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -286,11 +297,11 @@ public class CreateReservation {
 
     /**
      * Inserts booking data into the database using JDBC.
+     *
      * @param conn Connection object to the database.
      * @throws SQLException if there is a problem executing the SQL query.
      * @throws IOException if there is an I/O problem during the operation.
      */
-
     public void insertBooking(Connection conn) throws SQLException, IOException {
         try {
             boolean selectedIsWalkIn = isWalkIn.isSelected();

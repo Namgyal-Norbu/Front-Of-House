@@ -14,7 +14,6 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
  * within the FOH Service Software. It allows for updating details of a previously created reservation,
  * including customer information and reservation specifics like date, time, and table selection.
  */
-
 public class EditReservation {
     private final JFrame frame;
     private final JPanel panel;
@@ -31,9 +30,9 @@ public class EditReservation {
     private final JTextField occupants;
     private final JButton tableNo;
 
-     /**
+    /**
      * Constructs a new EditReservation instance. Initialises all UI components with data from the existing reservation.
-     * 
+     *
      * @param selectedBookingID The ID of the booking to edit.
      * @param isWalkInSelected Whether the reservation was marked as walk-in.
      * @param selectedPrefix The prefix of the customer.
@@ -45,7 +44,6 @@ public class EditReservation {
      * @param selectedOccupants The number of occupants for the reservation.
      * @param selectedTableNo The table numbers associated with the reservation.
      */
-
     public EditReservation(int selectedBookingID, boolean isWalkInSelected, String selectedPrefix, String selectedForename,
                            String selectedSurname, String selectedTelephone, UtilDateModel selectedDateModel,
                            String selectedTime, Integer selectedOccupants, String selectedTableNo) {
@@ -87,10 +85,9 @@ public class EditReservation {
     /**
      * Initialises and displays the reservation editing interface.
      * Configures the main frame, adds components to the panel, and makes the frame visible.
-     * 
+     *
      * @throws IOException if an I/O error occurs during the setup.
      */
-
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
         panel.setBorder(BorderFactory.createEmptyBorder());
@@ -111,7 +108,6 @@ public class EditReservation {
     /**
      * Configures the title properties and adds it to the top region of the main panel.
      */
-
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
@@ -120,6 +116,14 @@ public class EditReservation {
         panel.add(title, BorderLayout.NORTH);
     }
 
+    /**
+     * Adds a labeled text field to the specified panel with the given layout.
+     *
+     * @param panel The panel to which the field is added.
+     * @param layout The layout for the field.
+     * @param label The label for the field.
+     * @param field The text field to be added.
+     */
     public void addField(JPanel panel, FlowLayout layout ,String label, JTextField field) {
         JPanel fieldPanel = new JPanel(layout);
         fieldPanel.setBackground(new Color(43, 51, 54));
@@ -132,6 +136,14 @@ public class EditReservation {
         panel.add(fieldPanel);
     }
 
+    /**
+     * Adds a labeled drop-down list to the specified panel with the given layout.
+     *
+     * @param panel The panel to which the drop-down list is added.
+     * @param layout The layout for the drop-down list.
+     * @param label The label for the drop-down list.
+     * @param dropBox The drop-down list to be added.
+     */
     public void addDropDown(JPanel panel, FlowLayout layout ,String label, JComboBox<String> dropBox) {
         JPanel fieldPanel = new JPanel(layout);
         fieldPanel.setBackground(new Color(43, 51, 54));
@@ -144,6 +156,10 @@ public class EditReservation {
         panel.add(fieldPanel);
     }
 
+    /**
+     * Configures the form components including walk-in checkbox, prefix drop-down list, text fields,
+     * date picker, time selector, occupants field, and table number field.
+     */
     public void setForm() {
         JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
         formPanel.setBackground(new Color(43, 51, 54));
@@ -204,6 +220,9 @@ public class EditReservation {
         panel.add(formPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Configures and adds submit, cancel, and table selector buttons to the interface.
+     */
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -298,12 +317,11 @@ public class EditReservation {
     /**
      * Updates the booking in the database using JDBC. This includes modifying customer details,
      * reservation times, and associated table numbers.
-     * 
+     *
      * @param conn Connection object to the database.
      * @throws SQLException if there is a problem executing the SQL query.
      * @throws IOException if there is an I/O problem during the operation.
      */
-
     public void updateBooking(Connection conn) throws SQLException, IOException {
         try {
             boolean selectedIsWalkIn = isWalkIn.isSelected();

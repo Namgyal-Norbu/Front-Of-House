@@ -17,6 +17,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
+/**
+ * The ViewReservation class manages the user interface for viewing reservations
+ * within the FOH Service Software. This class provides GUI components for displaying
+ * reservation details, filtering reservations, and performing actions such as editing,
+ * deleting, and checking out reservations.
+ */
 public class ViewReservation {
     private final JFrame frame;
     private final JPanel panel;
@@ -28,6 +34,10 @@ public class ViewReservation {
 
     private final JTable reservations;
 
+    /**
+     * Constructs a new ViewReservation instance. Initializes all UI components
+     * used in the reservation viewing interface.
+     */
     public ViewReservation() {
         frame = new JFrame();
         panel = new JPanel();
@@ -40,6 +50,12 @@ public class ViewReservation {
         reservations = new JTable();
     }
 
+    /**
+     * Initializes and displays the reservation viewing interface.
+     * Configures the main frame, adds components to the panel, and makes the frame visible.
+     *
+     * @throws IOException if an I/O error occurs during the setup.
+     */
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
         panel.setBorder(BorderFactory.createEmptyBorder());
@@ -59,6 +75,9 @@ public class ViewReservation {
         frame.setVisible(true);
     }
 
+    /**
+     * Configures the title properties and adds it to the north region of the main panel.
+     */
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
@@ -67,6 +86,9 @@ public class ViewReservation {
         panel.add(title, BorderLayout.NORTH);
     }
 
+    /**
+     * Sets up the filtering options and the reservation table.
+     */
     public void setPage() {
         JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
         radioPanel.setBackground(new Color(43, 51, 54));
@@ -114,6 +136,11 @@ public class ViewReservation {
         panel.add(radioPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Adds action buttons for editing, deleting, and checking out reservations.
+     *
+     * @param p The panel to which the action buttons are added.
+     */
     public void setActionButtons(JPanel p) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -215,6 +242,11 @@ public class ViewReservation {
         p.add(buttonPanel);
     }
 
+    /**
+     * Configures the reservation table and adds it to the panel.
+     *
+     * @param p The panel to which the reservation table is added.
+     */
     public void setBookingTable(JPanel p) {
         JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         tablePanel.setBackground(new Color(43, 51, 54));
@@ -253,6 +285,9 @@ public class ViewReservation {
         p.add(tablePanel);
     }
 
+    /**
+     * Retrieves reservation data from the database and populates the reservation table.
+     */
     public void getBookings() {
         DefaultTableModel model = (DefaultTableModel) reservations.getModel();
         model.setRowCount(0);
@@ -295,8 +330,9 @@ public class ViewReservation {
         }
     }
 
-
-
+    /**
+     * Adds an exit button to return to the home screen.
+     */
     public void setExitButton() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -331,6 +367,12 @@ public class ViewReservation {
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Deletes a reservation from the database.
+     *
+     * @param bookingID The ID of the reservation to delete.
+     * @throws SQLException if there is an error deleting the reservation.
+     */
     private void deleteBooking(int bookingID) throws SQLException {
         try {
             Connection conn = JDBC.getConn();
@@ -356,6 +398,11 @@ public class ViewReservation {
         }
     }
 
+    /**
+     * Filters reservations based on the selected option (active, week, or month).
+     *
+     * @param filter The filter option to apply (active, week, or month).
+     */
     private void filterBookings(String filter) {
         if (JDBC.getConn() == null) {
             try {
@@ -461,5 +508,4 @@ public class ViewReservation {
             throw new RuntimeException(e);
         }
     }
-
 }

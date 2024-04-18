@@ -11,17 +11,16 @@ import java.sql.SQLException;
  * providing a GUI home screen with options to navigate to different functionalities such as
  * creating reservations, viewing reservations, and serving tables.
  */
-
 public class Home {
   private static JFrame frame;
   private static JPanel panel;
 
   /**
-     * Constructs a new Home instance. InitialiSes database connection and sets up the main frame and panel.
-     * 
-     * @throws SQLException if an error occurs during database connection initialization.
-     */
-
+   * Constructs a new Home instance.
+   * Initializes database connection and sets up the main frame and panel.
+   *
+   * @throws SQLException if an error occurs during database connection initialization.
+   */
   public Home() throws SQLException {
     JDBC.startConn();
 
@@ -29,6 +28,11 @@ public class Home {
     panel = new JPanel();
   }
 
+  /**
+   * Starts the home screen interface.
+   *
+   * @throws IOException if an I/O exception occurs during the interface setup.
+   */
   public void start() throws IOException {
     panel.setBackground(new Color(43, 51, 54));
     panel.setBorder(BorderFactory.createEmptyBorder());
@@ -48,10 +52,9 @@ public class Home {
   }
 
   /**
-     * Loads and displays the logo on the home interface.
-     * The logo is positioned within the panel based on specified bounds.
-     */
-
+   * Loads and displays the logo on the home interface.
+   * The logo is positioned within the panel based on specified bounds.
+   */
   public void loadLogo() {
     ImageIcon icon = new ImageIcon("res/images/logo.png");
     JLabel logo = new JLabel(icon);
@@ -59,6 +62,9 @@ public class Home {
     panel.add(logo);
   }
 
+  /**
+   * Loads and displays the buttons for various functionalities on the home interface.
+   */
   public void loadButtons() {
     JButton create = new JButton("Create Reservation");
     create.setBounds(75, 335, 200, 150);

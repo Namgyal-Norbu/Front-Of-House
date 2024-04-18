@@ -10,6 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * The Checkout class manages the user interface for finalizing orders and processing payments
+ * within the FOH Service Software. It allows applying discounts, service charges, selecting payment methods,
+ * and recording sales details.
+ */
 public class Checkout {
     private final JFrame frame;
     private final JPanel panel;
@@ -25,10 +30,11 @@ public class Checkout {
     private double totalPrice = 0.0;
 
 
-   /**
-   * Constructs a new Checkout instance. Initialises the main frame, panel, and title label.
-   */
-    
+    /**
+     * Constructs a new Checkout instance. Initializes the main frame, panel, and title label.
+     *
+     * @param bookingID The ID of the booking associated with the checkout.
+     */
     public Checkout(int bookingID) {
         frame = new JFrame();
         panel = new JPanel();
@@ -46,14 +52,13 @@ public class Checkout {
         total = new JTextArea();
     }
 
-     /**
+    /**
      * Initializes and displays the checkout interface.
      * This method sets up the background, layout, and buttons for the panel, and
      * makes the frame visible to the user.
-     * 
+     *
      * @throws IOException if an I/O error occurs when setting up the page.
      */
-
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
         panel.setBorder(BorderFactory.createEmptyBorder());
@@ -73,11 +78,10 @@ public class Checkout {
         frame.setVisible(true);
     }
 
-     /**
+    /**
      * Sets up the title for the checkout interface.
      * Configures the font, color, alignment, and border of the title label.
      */
-
     public void setTitle() {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(200, 200, 200));
@@ -86,10 +90,10 @@ public class Checkout {
         panel.add(title, BorderLayout.NORTH);
     }
 
-     /**
-     * Placeholder method for setting up the main content of the page.
+    /**
+     * Sets up the main content of the checkout page, including summary table,
+     * discount options, payment method selection, and total amount.
      */
-
     public void setPage() {
         JPanel summaryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 35, 20));
         summaryPanel.setBackground(new Color(43, 51, 54));
@@ -170,7 +174,11 @@ public class Checkout {
         panel.add(summaryPanel, BorderLayout.CENTER);
     }
 
-
+    /**
+     * Sets up the summary table with details of ordered dishes.
+     *
+     * @param p The panel to which the summary table is added.
+     */
     public void setSummaryTable(JPanel p) {
         JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         tablePanel.setBackground(new Color(43, 51, 54));
@@ -196,7 +204,9 @@ public class Checkout {
         p.add(tablePanel) ;
     }
 
-
+    /**
+     * Configures and adds pay and cancel buttons to the checkout interface.
+     */
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -245,6 +255,9 @@ public class Checkout {
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Searches for the order associated with the booking ID and populates the summary table.
+     */
     public void searchOrder() {
         try {
             Connection conn = JDBC.getConn();
@@ -281,18 +294,31 @@ public class Checkout {
         }
     }
 
+    /**
+     * Applies a discount to the total price based on the selected discount option.
+     *
+     * @param discountPercentage The percentage of discount to apply.
+     */
     private void applyDiscount(double discountPercentage) {
         totalPrice -= totalPrice * discountPercentage;
         totalPrice = Math.round(totalPrice * 100.0) / 100.0; // Round to two decimal places
         total.setText("£" + String.format("%.2f", totalPrice));
     }
 
+    /**
+     * Applies a service charge to the total price based on the selected service charge option.
+     *
+     * @param chargePercentage The percentage of service charge to apply.
+     */
     private void applyCharge(double chargePercentage) {
         totalPrice += totalPrice * chargePercentage;
         totalPrice = Math.round(totalPrice * 100.0) / 100.0; // Round to two decimal places
         total.setText("£" + String.format("%.2f", totalPrice));
     }
 
+    /**
+     * Inserts the sale data into the database, including order details, discounts, payment method, and total amount.
+     */
     public void insertSale() {
         try {
             Connection conn = JDBC.getConn();
@@ -354,8 +380,11 @@ public class Checkout {
         }
     }
 
-
-
+    /**
+     * Retrieves the list of dish IDs associated with the order.
+     *
+     * @return A string containing the list of dish IDs.
+     */
     private String getDishList() {
         ArrayList<String> dishIDs = new ArrayList<>();
 
@@ -394,5 +423,4 @@ public class Checkout {
         }
         return stringBuilder.toString();
     }
-
 }

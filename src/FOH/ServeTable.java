@@ -14,7 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
+/**
+ * The ServeTable class extends ServeSearch and provides functionality to serve tables with ordered dishes.
+ * It manages the GUI components for displaying booking details, managing orders, and interacting with the menu.
+ */
 public class ServeTable extends ServeSearch {
 
     private static JFrame frame;
@@ -36,7 +39,17 @@ public class ServeTable extends ServeSearch {
     private final JTable courseTwo;
     private final JTable courseThree;
 
-
+    /**
+     * Constructs a new ServeTable instance.
+     * Initializes GUI components for displaying booking details and managing orders.
+     *
+     * @param bookingID The ID of the booking.
+     * @param prefix    The prefix of the customer.
+     * @param forename  The forename of the customer.
+     * @param surname   The surname of the customer.
+     * @param occupants The number of occupants in the booking.
+     * @param tables    The tables booked for the booking.
+     */
     public ServeTable(int bookingID, String prefix, String forename, String surname, int occupants, String tables) {
         frame = new JFrame();
         panel = new JPanel(new BorderLayout());
@@ -59,6 +72,11 @@ public class ServeTable extends ServeSearch {
         courseThree = new JTable();
     }
 
+    /**
+     * Initializes and displays the GUI for serving the table.
+     *
+     * @throws IOException if an I/O error occurs during the setup.
+     */
     public void start() throws IOException {
         panel.setBackground(new Color(43, 51, 54));
         frame.add(panel, BorderLayout.CENTER);
@@ -74,7 +92,9 @@ public class ServeTable extends ServeSearch {
         frame.setVisible(true);
     }
 
-
+    /**
+     * Sets the text properties for displaying booking details.
+     */
     public void setText() {
         JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
         textPanel.setBackground(new Color(43, 51, 54));
@@ -97,7 +117,11 @@ public class ServeTable extends ServeSearch {
         panel.add(textPanel);
     }
 
-
+    /**
+     * Loads buttons for adding courses and managing the order.
+     *
+     * @param p The panel to which buttons are added.
+     */
     public void loadActionButton(JPanel p) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 20));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -136,7 +160,9 @@ public class ServeTable extends ServeSearch {
         p.add(buttonPanel);
     }
 
-
+    /**
+     * Loads buttons for managing the order.
+     */
     public void loadButtons() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(new Color(43, 51, 54));
@@ -204,6 +230,11 @@ public class ServeTable extends ServeSearch {
         panel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Sets up the orders table.
+     *
+     * @param p The panel to which the table is added.
+     */
     public void seOrdersTable(JPanel p) {
         JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
         tablePanel.setBackground(new Color(43, 51, 54));
@@ -230,6 +261,12 @@ public class ServeTable extends ServeSearch {
         p.add(tablePanel);
     }
 
+    /**
+     * Opens a tab for a specific course, displaying its associated dishes.
+     *
+     * @param course      The course number.
+     * @param courseTable The table to display the dishes for the course.
+     */
     private void openCourseTab(int course, JTable courseTable) {
         JFrame courseFrame = new JFrame("Course " + course);
         JPanel coursePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -327,6 +364,12 @@ public class ServeTable extends ServeSearch {
         courseFrame.setVisible(true);
     }
 
+    /**
+     * Adds selected dishes from the course table to the order table.
+     *
+     * @param courseTable     The table containing the dishes.
+     * @param allergiesField  The text field for inputting allergies.
+     */
     private void addToOrder(JTable courseTable, JTextField allergiesField) {
         DefaultTableModel orderModel = (DefaultTableModel) order.getModel();
         DefaultTableModel courseModel = (DefaultTableModel) courseTable.getModel();
@@ -350,7 +393,12 @@ public class ServeTable extends ServeSearch {
         }
     }
 
-
+    /**
+     * Sets the description of the selected dish in the description area.
+     *
+     * @param course      The course number.
+     * @param courseTable The table containing the dishes.
+     */
     public void setDescription(int course, JTable courseTable) {
 
         courseTable.getSelectionModel().addListSelectionListener(e -> {
@@ -380,7 +428,9 @@ public class ServeTable extends ServeSearch {
         });
     }
 
-
+    /**
+     * Removes selected rows from the order table.
+     */
     private void removeFromOrder() {
         DefaultTableModel orderModel = (DefaultTableModel) order.getModel();
         int[] selectedRows = order.getSelectedRows();
@@ -389,6 +439,9 @@ public class ServeTable extends ServeSearch {
         }
     }
 
+    /**
+     * Submits the order by inserting it into the database.
+     */
     private void submitOrder() {
         DefaultTableModel orderModel = (DefaultTableModel) order.getModel();
         Map<String, String[]> orderedDishes = new HashMap<>(); // Using a string key combining dishID and allergies
@@ -419,6 +472,12 @@ public class ServeTable extends ServeSearch {
 
         insertOrder(orderedDishes);
     }
+
+    /**
+     * Inserts the ordered dishes into the database.
+     *
+     * @param orderedDishes A map containing the ordered dishes.
+     */
 
     public void insertOrder(Map<String, String[]> orderedDishes) {
         try {
@@ -480,6 +539,12 @@ public class ServeTable extends ServeSearch {
         }
     }
 
+    /**
+     * Retrieves the price of a dish based on its ID.
+     *
+     * @param dishID The ID of the dish.
+     * @return The price of the dish.
+     */
     public double getDishPrice(int dishID) {
         for (Course course : menu.getCourses()) {
             for (Dish dish : course.getDishes()) {
@@ -488,6 +553,6 @@ public class ServeTable extends ServeSearch {
                 }
             }
         }
-        return 0.0; // Return 0.0 if dishID is not found (you may want to handle this differently)
+        return 0.0;
     }
 }
